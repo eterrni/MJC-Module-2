@@ -1,5 +1,6 @@
 package com.epam.esm.entity;
 
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class GiftCertificate {
@@ -9,8 +10,8 @@ public class GiftCertificate {
     private String description;
     private double price;
     private int duration;
-    private String createDate;
-    private String lastUpdateDate;
+    private LocalDateTime createDate;
+    private LocalDateTime lastUpdateDate;
 
     public GiftCertificate() {
     }
@@ -55,19 +56,19 @@ public class GiftCertificate {
         this.duration = duration;
     }
 
-    public String getCreateDate() {
+    public LocalDateTime getCreateDate() {
         return createDate;
     }
 
-    public void setCreateDate(String createDate) {
+    public void setCreateDate(LocalDateTime createDate) {
         this.createDate = createDate;
     }
 
-    public String getLastUpdateDate() {
+    public LocalDateTime getLastUpdateDate() {
         return lastUpdateDate;
     }
 
-    public void setLastUpdateDate(String lastUpdateDate) {
+    public void setLastUpdateDate(LocalDateTime lastUpdateDate) {
         this.lastUpdateDate = lastUpdateDate;
     }
 
