@@ -8,7 +8,9 @@ public interface GiftCertificateService {
 
     List<GiftCertificate> getAllGiftCertificates();
 
-    void saveGiftCertificate();
+    void addGiftCertificate(GiftCertificate giftCertificate);
+
+    void updateGiftCertificate(GiftCertificate giftCertificate);
 
     void deleteGiftCertificate(int id);
 

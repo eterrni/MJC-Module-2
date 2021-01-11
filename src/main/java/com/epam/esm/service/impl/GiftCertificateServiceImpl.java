@@ -23,7 +23,18 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
 
     @Override
     @Transactional
-    public void saveGiftCertificate() {
+    public GiftCertificate getGiftCertificate(int id) {
+        return giftCertificateDAO.getGiftCertificate(id);
+    }
+
+    @Override
+    @Transactional
+    public void addGiftCertificate(GiftCertificate giftCertificate) {
+        giftCertificateDAO.addGiftCertificate(giftCertificate);
+    }
+
+    @Override
+    public void updateGiftCertificate(GiftCertificate giftCertificate) {
 
     }
 
@@ -31,11 +42,5 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     @Transactional
     public void deleteGiftCertificate(int id) {
 
-    }
-
-    @Override
-    @Transactional
-    public GiftCertificate getGiftCertificate(int id) {
-        return null;
     }
 }
