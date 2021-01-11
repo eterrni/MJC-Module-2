@@ -1,0 +1,17 @@
+# Compiled class file
+*.class
+*.bat
+gradlew
+
+# Log file
+*.iml
+
+#Ignore IntelliJ folders
+/.settings
+/build
+/gradle
+/.gradle
+/.classpath
+/.project
+/.idea
+/out
