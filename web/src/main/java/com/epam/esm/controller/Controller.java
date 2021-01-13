@@ -20,6 +20,7 @@ public class Controller {
         return giftCertificateService.readAllGiftCertificates();
     }
 
+
     @GetMapping("/gift_certificates/{id}")
     public GiftCertificate readGiftCertificate(@PathVariable int id) {
         GiftCertificate giftCertificate = giftCertificateService.readGiftCertificate(id);
@@ -38,4 +39,5 @@ public class Controller {
     public void updateGiftCertificate(@RequestBody GiftCertificate giftCertificate) {
         giftCertificateService.updateGiftCertificate(giftCertificate);
     }
+
 }

@@ -36,11 +36,12 @@ public class GiftCertificateServiceImpl implements GiftCertificateService {
     @Override
     public Integer updateGiftCertificate(GiftCertificate giftCertificate) {
         return giftCertificateDAO.updateGiftCertificate(giftCertificate);
+
+
     }
 
     @Override
-    @Transactional
     public void deleteGiftCertificate(int id) {
-        giftCertificateDAO.deleteGiftCertificate(id);
+
     }
 }
