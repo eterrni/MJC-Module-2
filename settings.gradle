@@ -1,2 +1,6 @@
 rootProject.name = 'mjc_module_2'
 
+include 'web'
+include 'service'
+include 'model'
+
