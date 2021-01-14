@@ -1,5 +1,6 @@
-package com.epam.esm.entity;
+package com.epam.esm.dto;
 
+import com.epam.esm.entity.Tag;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -13,7 +14,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class GiftCertificate {
+public class GiftCertificateDto {
     private int id;
     private String name;
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -27,13 +28,6 @@ public class GiftCertificate {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private LocalDateTime lastUpdateDate;
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
-    private List<Tag> tags = new ArrayList<>();
-
-    // This constructor is needed to add gift certificates with id and name only
-    // in the List<GiftCertificate> for each tag
-    public GiftCertificate(int id, String name) {
-        this.id = id;
-        this.name = name;
-    }
+    private List<TagDto> tags = new ArrayList<>();
 
 }

@@ -13,7 +13,7 @@ import java.beans.PropertyVetoException;
 @Configuration
 @ComponentScan(basePackages = "com.epam.esm")
 @EnableWebMvc
-public class DatabaseBeanConfig {
+public class DatabaseBeanConfiguration {
 
     private static final String DRIVER_CLASS_NAME = "com.mysql.jdbc.Driver";
     private static final String URL = "jdbc:mysql://localhost/mjc_module_2?useSSl=false&serverTimezone=Europe/Moscow";
@@ -36,6 +36,7 @@ public class DatabaseBeanConfig {
 
     @Bean
     public JdbcTemplate jdbcTemplate() {
+
         return new JdbcTemplate(dataSource());
     }
 

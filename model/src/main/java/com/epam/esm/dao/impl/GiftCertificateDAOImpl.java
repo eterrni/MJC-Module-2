@@ -7,9 +7,14 @@ import com.epam.esm.entity.Tag;
 import com.epam.esm.entity.TagMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+import java.sql.PreparedStatement;
+import java.sql.Statement;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public class GiftCertificateDAOImpl implements GiftCertificateDAO {
@@ -21,10 +26,7 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
             "join mjc_module_2.tag\n" +
             "on mjc_module_2.gift_certificate_has_tag.tag_id_tag = mjc_module_2.tag.id_tag\n" +
             "where gift_certificate_id_gift_certificate=?;";
-
-    private static final String SELECT_ALL_TAGS = "SELECT * FROM mjc_module_2.tag";
-    private static final String SELECT_TAG_ID = "SELECT * FROM mjc_module_2.tag where mjc_module_2.tag.id_tag=?;";
-    private static final String INSERT_TAG = "INSERT INTO `mjc_module_2`.`tag` (`name_tag`) VALUES (?);";
+    private static final String CREATE_CERTIFICATE_HAS_TAG = "INSERT INTO `mjc_module_2`.`gift_certificate_has_tag` (`gift_certificate_id_gift_certificate`, `tag_id_tag`) VALUES (?, ?);\n";
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -48,35 +50,51 @@ public class GiftCertificateDAOImpl implements GiftCertificateDAO {
     }
 
     @Override
-    public GiftCertificate readGiftCertificate(int id) {
-        GiftCertificate giftCertificate = jdbcTemplate.query(SELECT_CERTIFICATE_ID,
-                new Object[]{id}, giftCertificateMapper).stream().findAny().orElse(null);
-        if (giftCertificate != null) {
-            List<Tag> tags = jdbcTemplate.query(SELECT_TAGS_BY_CERTIFICATE_ID, new Object[]{id}, tagMapper);
-            for (Tag tag : tags) {
-                giftCertificate.getTags().add(tag);
-            }
-            return giftCertificate;
-        } else return null;
+    public Optional<GiftCertificate> readGiftCertificate(int id) {
+        Optional<GiftCertificate> giftCertificate = jdbcTemplate.query(SELECT_CERTIFICATE_ID, new Object[]{id}, giftCertificateMapper).stream().findFirst();
+        List<Tag> tags = jdbcTemplate.query(SELECT_TAGS_BY_CERTIFICATE_ID, new Object[]{id}, tagMapper);
+        for (Tag tag : tags) {
+            giftCertificate.get().getTags().add(tag);
+        }
+        return giftCertificate;
     }
 
 
     @Override
     public GiftCertificate createGiftCertificate(GiftCertificate giftCertificate) {
-        jdbcTemplate.update(INSERT_CERTIFICATE,
-                giftCertificate.getName(),
-                giftCertificate.getDescription(),
-                giftCertificate.getPrice(),
-                giftCertificate.getDuration()
-        );
-        return giftCertificate; // заглушка
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+
+        jdbcTemplate.update(connection -> {
+            PreparedStatement preparedStatement = connection.prepareStatement(INSERT_CERTIFICATE, Statement.RETURN_GENERATED_KEYS);
+            preparedStatement.setString(1, giftCertificate.getName());
+            preparedStatement.setString(2, giftCertificate.getDescription());
+            preparedStatement.setBigDecimal(3, giftCertificate.getPrice());
+            preparedStatement.setInt(4, giftCertificate.getDuration());
+            return preparedStatement;
+        }, keyHolder);
+
+        GiftCertificate createdGiftCertificate = jdbcTemplate.query(SELECT_CERTIFICATE_ID, new Object[]{keyHolder.getKey().intValue()}, giftCertificateMapper).stream().findFirst().get();
+
+        giftCertificate.setId(createdGiftCertificate.getId());
+        giftCertificate.setCreateDate(createdGiftCertificate.getCreateDate());
+        giftCertificate.setLastUpdateDate(createdGiftCertificate.getLastUpdateDate());
+
+        return giftCertificate;
     }
 
+    @Override
+    public void createGiftCertificateHasTag(GiftCertificate giftCertificate) {
+        List<Tag> tags = giftCertificate.getTags();
+        tags.forEach(tag -> jdbcTemplate.update(CREATE_CERTIFICATE_HAS_TAG, giftCertificate.getId(), tag.getId()));
+    }
+
+    // TO DO
     @Override
     public Integer updateGiftCertificate(GiftCertificate giftCertificate) {
         return 0;
     }
 
+    // TO DO
     @Override
     public void deleteGiftCertificate(int id) {
 

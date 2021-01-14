@@ -10,7 +10,7 @@ public class WebInitializer extends AbstractAnnotationConfigDispatcherServletIni
 
     @Override
     protected Class<?>[] getServletConfigClasses() {
-        return new Class[]{DatabaseBeanConfig.class};
+        return new Class[]{DatabaseBeanConfiguration.class, ServiceConfiguration.class};
     }
 
     @Override
