@@ -9,21 +9,14 @@ gradlew
 #Ignore IntelliJ folders
 /.settings/
 /build/
-<<<<<<< HEAD
-=======
 /web/build/
 /service/build/
 /model/build/
->>>>>>> febf8a38e0ea24b2ca75481558cf5e31292f9f02
 /gradle/
 /.gradle/
 /.classpath/
 /.project/
 /.idea/
 /out/
-<<<<<<< HEAD
-/web/build/
-/service/build/
-/model/build/
-=======
->>>>>>> febf8a38e0ea24b2ca75481558cf5e31292f9f02
+
+
