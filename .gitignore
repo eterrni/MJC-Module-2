@@ -10,7 +10,9 @@ gradlew
 /.settings
 /build
 /web/build/
+/build
 /service/build/
+/build
 /model/build/libs/
 /gradle
 /.gradle
