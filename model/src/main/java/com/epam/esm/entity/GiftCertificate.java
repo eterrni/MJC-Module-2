@@ -29,11 +29,4 @@ public class GiftCertificate {
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private List<Tag> tags = new ArrayList<>();
 
-    // This constructor is needed to add gift certificates with id and name only
-    // in the List<GiftCertificate> for each tag
-    public GiftCertificate(int id, String name) {
-        this.id = id;
-        this.name = name;
-    }
-
 }

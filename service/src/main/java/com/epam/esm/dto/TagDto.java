@@ -17,8 +17,4 @@ public class TagDto {
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private List<GiftCertificateDto> giftCertificateList = new ArrayList<>();
 
-//    public TagDto(Integer id, String name) {
-//        this.id = id;
-//        this.name = name;
-//    }
 }

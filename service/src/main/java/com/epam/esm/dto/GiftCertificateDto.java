@@ -1,6 +1,7 @@
 package com.epam.esm.dto;
 
 import com.epam.esm.entity.Tag;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -24,8 +25,10 @@ public class GiftCertificateDto {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private Integer duration;
     @JsonInclude(JsonInclude.Include.NON_NULL)
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private LocalDateTime createDate;
     @JsonInclude(JsonInclude.Include.NON_NULL)
+    @JsonFormat(shape = JsonFormat.Shape.STRING)
     private LocalDateTime lastUpdateDate;
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     private List<TagDto> tags = new ArrayList<>();

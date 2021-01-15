@@ -3,37 +3,42 @@ package com.epam.esm.controller;
 import com.epam.esm.dto.TagDto;
 import com.epam.esm.exception.ServiceException;
 import com.epam.esm.exception_handling.ErrorHandler;
-import com.epam.esm.service.TagService;
+import com.epam.esm.service.IService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/tag")
+@RequestMapping("/api")
 public class TagController {
+
     @Autowired
-    private TagService service;
+    @Qualifier("tagServiceImpl")
+    private IService service;
 
-    @PostMapping
-    public TagDto createTag(@RequestBody TagDto tagDto) throws ServiceException {
-        return service.createTag(tagDto);
+    @GetMapping("/tags")
+    public List<TagDto> readAll() {
+        return service.readAll();
     }
 
-    @GetMapping
-    public List<TagDto> readAllTags() {
-        return service.readAllTags();
+    @GetMapping("/tag/{id}")
+    public TagDto read(@PathVariable int id) {
+        return (TagDto) service.read(id);
     }
 
-    @GetMapping("/{id}")
-    public TagDto readTagById(@PathVariable int id) throws ServiceException {
-        return service.readTagById(id);
+    @PostMapping("/tag")
+    @ResponseStatus(HttpStatus.CREATED)
+    public TagDto create(@RequestBody TagDto tagDto) {
+        return (TagDto) service.create(tagDto);
     }
 
-    @DeleteMapping("/{id}")
-    public void deleteTagById(@PathVariable int id) {
-        service.deleteTag(id);
+    @DeleteMapping("/tag/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable int id) {
+        service.delete(id);
     }
 
     @ExceptionHandler(value = ServiceException.class)

@@ -7,16 +7,18 @@ gradlew
 *.iml
 
 #Ignore IntelliJ folders
-/.settings/
-/build/
+/.settings
+/build
 /web/build/
 /service/build/
-/model/build/
-/gradle/
-/.gradle/
-/.classpath/
-/.project/
-/.idea/
-/out/
+/model/build/libs/
+/gradle
+/.gradle
+/.classpath
+/.project
+/.idea
+/out
+
+
 
 

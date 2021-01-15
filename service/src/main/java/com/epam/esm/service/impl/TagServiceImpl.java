@@ -1,12 +1,15 @@
 package com.epam.esm.service.impl;
 
-import com.epam.esm.dao.TagDAO;
+import com.epam.esm.dao.DatabaseRepository;
+import com.epam.esm.dao.exception.DAOException;
 import com.epam.esm.dto.TagDto;
 import com.epam.esm.entity.Tag;
 import com.epam.esm.exception.ServiceException;
-import com.epam.esm.service.TagService;
+import com.epam.esm.service.IService;
+import lombok.SneakyThrows;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,45 +18,54 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-public class TagServiceImpl implements TagService {
+public class TagServiceImpl implements IService<TagDto, Integer> {
+
+    private static final String TAG_DAO_IMPL_BEAN_ID = "tagDAOImpl";
 
     @Autowired
-    private TagDAO tagDAO;
+    @Qualifier(TAG_DAO_IMPL_BEAN_ID)
+    private DatabaseRepository databaseRepository;
     @Autowired
     private ModelMapper modelMapper;
 
     @Override
     @Transactional
-    public TagDto createTag(TagDto tagDto) throws ServiceException {
-        Tag tag = modelMapper.map(tagDto, Tag.class);
-        Optional<Tag> existingTag = tagDAO.readByName(tag.getName());
-        Tag addedTag = existingTag.orElseGet(() -> tagDAO.createTag(tag));
+    public TagDto create(TagDto tagDto) {
+        Tag addedTag;
+        try {
+            addedTag = (Tag) databaseRepository.create(modelMapper.map(tagDto, Tag.class));
+        } catch (DAOException e) {
+            throw new ServiceException(e.getMessage(), e);
+        }
         return modelMapper.map(addedTag, TagDto.class);
     }
 
+
+    @SneakyThrows
     @Override
     @Transactional
-    public void deleteTag(int tagId) {
-        tagDAO.deleteGiftCertificateHasTag(tagId);
-        tagDAO.delete(tagId);
+    public void delete(final Integer tagId) {
+        databaseRepository.read(tagId).orElseThrow(() -> new ServiceException("There is no tag with ID = " + tagId + " in Database"));
+        databaseRepository.deleteGiftCertificateHasTag(tagId);
+        databaseRepository.delete(tagId);
     }
 
     @Override
-    public List<TagDto> readAllTags() {
-        List<Tag> tags = tagDAO.readAll();
+    public List<TagDto> readAll() {
+        List<Tag> tags = databaseRepository.readAll();
         return tags.stream().map(tag -> modelMapper.map(tag, TagDto.class)).collect(Collectors.toList());
     }
 
     @Override
-    public TagDto readTagById(int tagId) throws ServiceException {
-        Optional<Tag> readTag = tagDAO.readById(tagId);
+    public TagDto read(final Integer tagId) throws ServiceException {
+        Optional<Tag> readTag = databaseRepository.read(tagId);
         return readTag.map(tag -> modelMapper.map(tag, TagDto.class))
                 .orElseThrow(() -> new ServiceException("There is no tag with ID = " + tagId + " in Database"));
     }
 
     @Override
-    public List<TagDto> readTagsByGiftCertificateId(int giftCertificateId) {
-        List<Tag> readTags = tagDAO.readByGiftCertificateId(giftCertificateId);
-        return readTags.stream().map(readTag -> modelMapper.map(readTag, TagDto.class)).collect(Collectors.toList());
+    public TagDto update(TagDto entity) {
+        return null;
     }
+
 }
