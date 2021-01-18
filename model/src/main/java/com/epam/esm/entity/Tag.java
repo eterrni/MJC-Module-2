@@ -1,11 +1,9 @@
 package com.epam.esm.entity;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -14,8 +12,7 @@ import java.util.List;
 public class Tag {
     private Integer id;
     private String name;
-    @JsonInclude(JsonInclude.Include.NON_EMPTY)
-    private List<GiftCertificate> giftCertificateList = new ArrayList<>();
+    private List<GiftCertificate> giftCertificateList;
 
     public Tag(Integer id, String name) {
         this.id = id;

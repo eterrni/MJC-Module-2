@@ -1,11 +1,15 @@
-package com.epam.esm.exception_handling;
+package com.epam.esm.exceptionHandler;
 
 public class ErrorHandler {
-    private final String errorMessage;
-    private final int errorCode;
+    private String errorMessage;
+    private int errorCode;
 
     public ErrorHandler(String errorMessage, int errorCode) {
         this.errorMessage = errorMessage;
+        this.errorCode = errorCode;
+    }
+
+    public ErrorHandler(int errorCode) {
         this.errorCode = errorCode;
     }
 

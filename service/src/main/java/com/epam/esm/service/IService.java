@@ -1,8 +1,5 @@
 package com.epam.esm.service;
 
-import com.epam.esm.dao.exception.DAOException;
-import com.epam.esm.exception.ServiceException;
-
 import java.util.List;
 
 public interface IService<T, K> {
@@ -12,7 +9,7 @@ public interface IService<T, K> {
 
     T create(final T entity);
 
-    T update(final T entity);
+    void update(final T entity);
 
     void delete(final K id);
 

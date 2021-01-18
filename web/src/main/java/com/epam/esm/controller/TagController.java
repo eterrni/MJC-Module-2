@@ -1,8 +1,6 @@
 package com.epam.esm.controller;
 
 import com.epam.esm.dto.TagDto;
-import com.epam.esm.exception.ServiceException;
-import com.epam.esm.exception_handling.ErrorHandler;
 import com.epam.esm.service.IService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -16,7 +14,7 @@ import java.util.List;
 public class TagController {
 
     @Autowired
-    @Qualifier("tagServiceImpl")
+    @Qualifier("tagService")
     private IService service;
 
     @GetMapping("/tags")
@@ -41,9 +39,4 @@ public class TagController {
         service.delete(id);
     }
 
-    @ExceptionHandler(value = ServiceException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorHandler handleIncorrectParameterValueException(ServiceException exception) {
-        return new ErrorHandler(exception.getMessage(), 40);
-    }
 }

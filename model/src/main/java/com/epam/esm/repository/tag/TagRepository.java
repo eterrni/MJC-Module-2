@@ -1,11 +1,10 @@
-package com.epam.esm.dao.impl;
+package com.epam.esm.repository.tag;
 
-import com.epam.esm.dao.DatabaseRepository;
-import com.epam.esm.dao.exception.DAOException;
 import com.epam.esm.entity.GiftCertificate;
-import com.epam.esm.entity.GiftCertificateMapper;
 import com.epam.esm.entity.Tag;
-import com.epam.esm.entity.TagMapper;
+import com.epam.esm.repository.DatabaseRepository;
+import com.epam.esm.repository.certificate.GiftCertificateMapper;
+import com.epam.esm.repository.exception.DuplicateNameException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -18,13 +17,12 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public class TagDAOImpl implements DatabaseRepository<Tag, Integer> {
+public class TagRepository implements DatabaseRepository<Tag, Integer> {
     private static final String GET_TAG_BY_NAME = "SELECT * FROM mjc_module_2.tag where mjc_module_2.tag.name_tag=?";
     private static final String GET_TAG_BY_ID = "SELECT * FROM mjc_module_2.tag where mjc_module_2.tag.id_tag=?";
     private static final String GET_ALL_TAGS = "SELECT * FROM mjc_module_2.tag";
     public static final String CREATE_TAG = "INSERT INTO `mjc_module_2`.`tag` (`name_tag`) VALUES (?);";
     public static final String DELETE_TAG = "DELETE FROM `mjc_module_2`.`tag` WHERE (`id_tag` = ?);";
-    private static final String TAG_DELETE_GIFT_CERTIFICATE_HAS_TAG = "DELETE FROM mjc_module_2.gift_certificate_has_tag WHERE (tag_id_tag=?)";
     private static final String GET_CERTIFICATES_BY_TAG_ID = "SELECT \n" +
             "mjc_module_2.gift_certificate.id,\n" +
             "mjc_module_2.gift_certificate.name,\n" +
@@ -51,30 +49,18 @@ public class TagDAOImpl implements DatabaseRepository<Tag, Integer> {
 
     @Override
     public List<Tag> readAll() {
-        List<Tag> tags = jdbcTemplate.query(GET_ALL_TAGS, tagMapper);
-        for (Tag tag : tags) {
-            List<GiftCertificate> giftCertificates = jdbcTemplate.query(GET_CERTIFICATES_BY_TAG_ID, new Object[]{tag.getId()}, giftCertificateMapper);
-            for (GiftCertificate giftCertificate : giftCertificates) {
-                tag.getGiftCertificateList().add(giftCertificate);
-            }
-        }
-        return tags;
+        return jdbcTemplate.query(GET_ALL_TAGS, tagMapper);
     }
 
     @Override
     public Optional<Tag> read(final Integer tagId) {
-        Optional<Tag> tag = jdbcTemplate.query(GET_TAG_BY_ID, new Object[]{tagId}, tagMapper).stream().findFirst();
-        List<GiftCertificate> giftCertificates = jdbcTemplate.query(GET_CERTIFICATES_BY_TAG_ID, new Object[]{tagId}, giftCertificateMapper);
-        for (GiftCertificate giftCertificate : giftCertificates) {
-            tag.get().getGiftCertificateList().add(giftCertificate);
-        }
-        return tag;
+        return jdbcTemplate.query(GET_TAG_BY_ID, new Object[]{tagId}, tagMapper).stream().findFirst();
     }
 
     @Override
-    public Tag create(Tag tag) throws DAOException {
+    public Tag create(Tag tag) {
         if (isExist(tag.getName())) {
-            throw new DAOException("A tag with name = " + tag.getName() + " already exists");
+            throw new DuplicateNameException("A tag with name = " + tag.getName() + " already exists");
         }
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(connection -> {
@@ -87,15 +73,17 @@ public class TagDAOImpl implements DatabaseRepository<Tag, Integer> {
     }
 
     @Override
-    public void delete(final Integer tagId) {
-        jdbcTemplate.update(DELETE_TAG, tagId);
+    public Integer delete(final Integer tagId) {
+        return jdbcTemplate.update(DELETE_TAG, tagId);
     }
 
     @Override
-    public void deleteGiftCertificateHasTag(final Integer id) {
-        jdbcTemplate.update(TAG_DELETE_GIFT_CERTIFICATE_HAS_TAG, id);
+    public void joinCertificatesAndTags(List<Tag> tags) {
+        for (Tag tag : tags) {
+            List<GiftCertificate> giftCertificates = jdbcTemplate.query(GET_CERTIFICATES_BY_TAG_ID, new Object[]{tag.getId()}, giftCertificateMapper);
+            tag.setGiftCertificateList(giftCertificates);
+        }
     }
-
 
     public Tag readTagByName(String tagName) {
         Optional<Tag> tag = jdbcTemplate.query(GET_TAG_BY_NAME, new Object[]{tagName}, tagMapper).stream().findAny();
@@ -107,8 +95,8 @@ public class TagDAOImpl implements DatabaseRepository<Tag, Integer> {
     }
 
     @Override
-    public Tag update(Tag entity) {
-        return null;
+    public Integer update(Tag entity) {
+        throw new UnsupportedOperationException("Unsupported operation UPDATE for tag");
     }
 
 }

@@ -1,5 +1,6 @@
-package com.epam.esm.entity;
+package com.epam.esm.repository.certificate;
 
+import com.epam.esm.entity.GiftCertificate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 
@@ -27,8 +28,8 @@ public class GiftCertificateMapper implements RowMapper<GiftCertificate> {
         giftCertificate.setDescription(rs.getString(DESCRIPTION));
         giftCertificate.setPrice(rs.getBigDecimal(PRICE));
         giftCertificate.setDuration(rs.getInt(DURATION));
-        giftCertificate.setCreateDate(LocalDateTime.ofInstant(rs.getTimestamp(CREATE_DATE).toInstant(),ZoneId.systemDefault()));
-        giftCertificate.setLastUpdateDate(LocalDateTime.ofInstant(rs.getTimestamp(LAST_UPDATE_DATE).toInstant(),ZoneId.systemDefault()));
+        giftCertificate.setCreateDate(LocalDateTime.ofInstant(rs.getTimestamp(CREATE_DATE).toInstant(), ZoneId.systemDefault()));
+        giftCertificate.setLastUpdateDate(LocalDateTime.ofInstant(rs.getTimestamp(LAST_UPDATE_DATE).toInstant(), ZoneId.systemDefault()));
         return giftCertificate;
     }
 

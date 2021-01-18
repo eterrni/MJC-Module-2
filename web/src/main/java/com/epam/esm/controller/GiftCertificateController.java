@@ -1,8 +1,6 @@
 package com.epam.esm.controller;
 
 import com.epam.esm.dto.GiftCertificateDto;
-import com.epam.esm.exception.ServiceException;
-import com.epam.esm.exception_handling.ErrorHandler;
 import com.epam.esm.service.IService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -15,7 +13,7 @@ import java.util.List;
 @RequestMapping("/api")
 public class GiftCertificateController {
 
-    @Qualifier("giftCertificateServiceImpl")
+    @Qualifier("giftCertificateService")
     @Autowired
     private IService service;
 
@@ -36,21 +34,15 @@ public class GiftCertificateController {
     }
 
     @PutMapping("/gift_certificate")
-    public GiftCertificateDto update(@RequestBody GiftCertificateDto giftCertificateDto) {
-        return (GiftCertificateDto) service.update(giftCertificateDto);
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void update(@RequestBody GiftCertificateDto giftCertificateDto) {
+        service.update(giftCertificateDto);
     }
 
     @DeleteMapping("/gift_certificate/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable int id) {
         service.delete(id);
-    }
-
-
-    @ExceptionHandler(value = ServiceException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorHandler handleIncorrectParameterValueException(ServiceException exception) {
-        return new ErrorHandler(exception.getMessage(), 40);
     }
 
 }
