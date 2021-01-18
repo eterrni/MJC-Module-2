@@ -1,6 +1,7 @@
 package com.epam.esm.repository.certificate;
 
 import com.epam.esm.entity.GiftCertificate;
+import com.epam.esm.entity.GiftCertificateQueryParameters;
 import com.epam.esm.entity.Tag;
 import com.epam.esm.repository.DatabaseRepository;
 import com.epam.esm.repository.tag.TagMapper;
@@ -20,15 +21,26 @@ public class GiftCertificateRepository implements DatabaseRepository<GiftCertifi
 
     private static final String SELECT_ALL_CERTIFICATES = "SELECT * FROM mjc_module_2.gift_certificate;";
     private static final String SELECT_CERTIFICATE_ID = "SELECT * FROM mjc_module_2.gift_certificate where gift_certificate.id=?;";
-    private static final String INSERT_CERTIFICATE = "INSERT INTO `mjc_module_2`.`gift_certificate` (`name`, `description`, `price`, `duration`) VALUES (?, ?, ?, ?);";
     private static final String SELECT_TAGS_BY_CERTIFICATE_ID = "SELECT id_tag,name_tag FROM mjc_module_2.gift_certificate_has_tag\n" +
             "join mjc_module_2.tag\n" +
             "on mjc_module_2.gift_certificate_has_tag.tag_id_tag = mjc_module_2.tag.id_tag\n" +
             "where gift_certificate_id_gift_certificate=?;";
+    private static final String INSERT_CERTIFICATE = "INSERT INTO `mjc_module_2`.`gift_certificate` (`name`, `description`, `price`, `duration`) VALUES (?, ?, ?, ?);";
     private static final String CREATE_CERTIFICATE_HAS_TAG = "INSERT INTO `mjc_module_2`.`gift_certificate_has_tag` (`gift_certificate_id_gift_certificate`, `tag_id_tag`) VALUES (?, ?);\n";
     private static final String UPDATE_GIFT_CERTIFICATE = "UPDATE `mjc_module_2`.`gift_certificate` SET `name` = ?, `description` = ?, `price` = ?, `duration` = ? WHERE (`id` = ?);\n";
     private static final String DELETE_GIFT_CERTIFICATE = "DELETE FROM mjc_module_2.gift_certificate WHERE id = ?";
     private static final String DELETE_GIFT_CERTIFICATE_HAS_TAG = "DELETE FROM mjc_module_2.gift_certificate_has_tag where gift_certificate_id_gift_certificate=?;";
+    private static final String GET_BY_QUERY_PARAMETERS = "SELECT \n" +
+            "mjc_module_2.gift_certificate.id, mjc_module_2.gift_certificate.name,\n" +
+            "mjc_module_2.gift_certificate.description, mjc_module_2.gift_certificate.price,\n" +
+            "mjc_module_2.gift_certificate.duration, mjc_module_2.gift_certificate.create_date,\n" +
+            "mjc_module_2.gift_certificate.last_update_date \n" +
+            "FROM mjc_module_2.gift_certificate \n" +
+            "LEFT JOIN mjc_module_2.gift_certificate_has_tag ON mjc_module_2.gift_certificate.id = mjc_module_2.gift_certificate_has_tag.gift_certificate_id_gift_certificate\n" +
+            "LEFT JOIN mjc_module_2.tag ON mjc_module_2.gift_certificate_has_tag.tag_id_tag = mjc_module_2.tag.id_tag \n" +
+            "WHERE mjc_module_2.tag.name_tag LIKE concat(?, '%') AND \n" +
+            "mjc_module_2.gift_certificate.name LIKE concat(?, '%') AND\n" +
+            "mjc_module_2.gift_certificate.description LIKE concat(?, '%') GROUP BY mjc_module_2.gift_certificate.id ";
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -47,6 +59,17 @@ public class GiftCertificateRepository implements DatabaseRepository<GiftCertifi
     @Override
     public Optional<GiftCertificate> read(final Integer id) {
         return jdbcTemplate.query(SELECT_CERTIFICATE_ID, new Object[]{id}, giftCertificateMapper).stream().findFirst();
+    }
+
+    @Override
+    public List<GiftCertificate> readByQueryParameters(GiftCertificateQueryParameters parameters) {
+        String query = GET_BY_QUERY_PARAMETERS + parameters.getSortType().getSortType() +
+                " " + parameters.getOrderType().getOrderType();
+        return jdbcTemplate.query(query, new Object[]{
+                parameters.getTagName(),
+                parameters.getName(),
+                parameters.getDescription(),
+        }, giftCertificateMapper);
     }
 
     @Override

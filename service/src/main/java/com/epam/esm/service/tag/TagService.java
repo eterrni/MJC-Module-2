@@ -1,5 +1,6 @@
 package com.epam.esm.service.tag;
 
+import com.epam.esm.dto.GiftCertificateQueryParametersDto;
 import com.epam.esm.dto.TagDto;
 import com.epam.esm.entity.Tag;
 import com.epam.esm.exception.NotExistIdEntityException;
@@ -20,6 +21,7 @@ import java.util.stream.Collectors;
 public class TagService implements IService<TagDto, Integer> {
 
     private static final String TAG_DAO_IMPL_BEAN_ID = "tagRepository";
+
 
     @Autowired
     @Qualifier(TAG_DAO_IMPL_BEAN_ID)
@@ -64,7 +66,12 @@ public class TagService implements IService<TagDto, Integer> {
 
     @Override
     public void update(TagDto entity) {
-        throw new UnsupportedOperationException("Unsupported operation UPDATE for tag");
+        throw new UnsupportedOperationException("Update  - unsupported operation for tag");
+    }
+
+    @Override
+    public List<TagDto> readByQueryParameters(GiftCertificateQueryParametersDto parameters) {
+        throw new UnsupportedOperationException("Read by query parameters - unsupported operation for tag");
     }
 
 }

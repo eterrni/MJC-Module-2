@@ -1,6 +1,7 @@
 package com.epam.esm.repository.tag;
 
 import com.epam.esm.entity.GiftCertificate;
+import com.epam.esm.entity.GiftCertificateQueryParameters;
 import com.epam.esm.entity.Tag;
 import com.epam.esm.repository.DatabaseRepository;
 import com.epam.esm.repository.certificate.GiftCertificateMapper;
@@ -83,6 +84,11 @@ public class TagRepository implements DatabaseRepository<Tag, Integer> {
             List<GiftCertificate> giftCertificates = jdbcTemplate.query(GET_CERTIFICATES_BY_TAG_ID, new Object[]{tag.getId()}, giftCertificateMapper);
             tag.setGiftCertificateList(giftCertificates);
         }
+    }
+
+    @Override
+    public List<Tag> readByQueryParameters(GiftCertificateQueryParameters parameters) {
+        throw new UnsupportedOperationException("");
     }
 
     public Tag readTagByName(String tagName) {

@@ -1,5 +1,7 @@
 package com.epam.esm.service;
 
+import com.epam.esm.dto.GiftCertificateQueryParametersDto;
+
 import java.util.List;
 
 public interface IService<T, K> {
@@ -13,4 +15,5 @@ public interface IService<T, K> {
 
     void delete(final K id);
 
+    List<T> readByQueryParameters(GiftCertificateQueryParametersDto parameters);
 }

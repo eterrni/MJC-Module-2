@@ -1,6 +1,7 @@
 package com.epam.esm.controller;
 
 import com.epam.esm.dto.GiftCertificateDto;
+import com.epam.esm.dto.GiftCertificateQueryParametersDto;
 import com.epam.esm.service.IService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -43,6 +44,22 @@ public class GiftCertificateController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable int id) {
         service.delete(id);
+    }
+
+    @RequestMapping("/gift_certificates")
+    public List<GiftCertificateDto> readByQueryParameters(@RequestParam(value = "tagName",
+            required = false) String tagName, @RequestParam(value = "name", required = false) String name,
+                                                          @RequestParam(value = "description",
+                                                                  required = false) String description,
+                                                          @RequestParam(value = "sortType", required = false)
+                                                                  String sortType,
+                                                          @RequestParam(value = "orderType", required = false)
+                                                                  String orderType) {
+        GiftCertificateQueryParametersDto.SortType sortType1 = GiftCertificateQueryParametersDto.SortType.valueOf(sortType);
+        GiftCertificateQueryParametersDto.OrderType orderType1 = GiftCertificateQueryParametersDto.OrderType.valueOf(orderType);
+        GiftCertificateQueryParametersDto parametersDto = new GiftCertificateQueryParametersDto(
+                tagName, name, description, sortType1, orderType1);
+        return service.readByQueryParameters(parametersDto);
     }
 
 }
