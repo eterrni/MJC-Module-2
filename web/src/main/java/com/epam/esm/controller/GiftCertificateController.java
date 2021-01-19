@@ -1,5 +1,7 @@
 package com.epam.esm.controller;
 
+import com.epam.esm.converter.OrderTypeConverter;
+import com.epam.esm.converter.SortTypeConverter;
 import com.epam.esm.dto.GiftCertificateDto;
 import com.epam.esm.dto.GiftCertificateQueryParametersDto;
 import com.epam.esm.service.IService;
@@ -46,7 +48,7 @@ public class GiftCertificateController {
         service.delete(id);
     }
 
-    @RequestMapping("/gift_certificates")
+    @RequestMapping("/gift_certificatess")
     public List<GiftCertificateDto> readByQueryParameters(@RequestParam(value = "tagName",
             required = false) String tagName, @RequestParam(value = "name", required = false) String name,
                                                           @RequestParam(value = "description",
@@ -55,8 +57,8 @@ public class GiftCertificateController {
                                                                   String sortType,
                                                           @RequestParam(value = "orderType", required = false)
                                                                   String orderType) {
-        GiftCertificateQueryParametersDto.SortType sortType1 = GiftCertificateQueryParametersDto.SortType.valueOf(sortType);
-        GiftCertificateQueryParametersDto.OrderType orderType1 = GiftCertificateQueryParametersDto.OrderType.valueOf(orderType);
+        GiftCertificateQueryParametersDto.SortType sortType1 = SortTypeConverter.convert(sortType);
+        GiftCertificateQueryParametersDto.OrderType orderType1 = OrderTypeConverter.convert(orderType);
         GiftCertificateQueryParametersDto parametersDto = new GiftCertificateQueryParametersDto(
                 tagName, name, description, sortType1, orderType1);
         return service.readByQueryParameters(parametersDto);

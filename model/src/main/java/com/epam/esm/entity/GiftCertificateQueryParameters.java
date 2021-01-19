@@ -28,7 +28,7 @@ public class GiftCertificateQueryParameters {
     }
 
     public enum OrderType {
-        ASC(" ASC"), DESC(" DESC"), DEFAULT("");
+        ASC("ASC"), DESC("DESC"), DEFAULT("");
 
         private final String orderType;
 
