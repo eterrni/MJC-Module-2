@@ -8,6 +8,11 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+/**
+ * Controller that handles requests related to the gift certificate
+ *
+ * @author Alexander Novikov
+ */
 @RestController
 @RequestMapping("/api")
 public class GiftCertificateController {
@@ -15,29 +20,16 @@ public class GiftCertificateController {
     @Autowired
     private GiftCertificateService service;
 
-    @GetMapping("/gift-certificate/{id}")
-    public GiftCertificateDto read(@PathVariable int id) {
-        return service.read(id);
-    }
-
-    @PostMapping("/gift-certificate")
-    @ResponseStatus(HttpStatus.CREATED)
-    public GiftCertificateDto create(@RequestBody GiftCertificateDto giftCertificateDto) {
-        return service.create(giftCertificateDto);
-    }
-
-    @PutMapping("/gift-certificate")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void update(@RequestBody GiftCertificateDto giftCertificateDto) {
-        service.update(giftCertificateDto);
-    }
-
-    @DeleteMapping("/gift-certificate/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable int id) {
-        service.delete(id);
-    }
-
+    /**
+     * Get all gift certificate by search parameters.
+     *
+     * @param tagName     the tag name
+     * @param name        the gift certificate name
+     * @param description the description
+     * @param sortType    the sort type
+     * @param orderType   the order type
+     * @return List of found gift certificates
+     */
     @GetMapping("/gift-certificates")
     public List<GiftCertificateDto> readAll(
             @RequestParam(value = "tagName", required = false) String tagName,
@@ -46,6 +38,51 @@ public class GiftCertificateController {
             @RequestParam(value = "sortType", required = false) String sortType,
             @RequestParam(value = "orderType", required = false) String orderType) {
         return service.readByQueryParameters(tagName, name, description, sortType, orderType);
+    }
+
+    /**
+     * Get gift certificate by ID
+     *
+     * @param id of the gift certificate we want to get
+     * @return the gift certificate on this ID
+     */
+    @GetMapping("/gift-certificate/{id}")
+    public GiftCertificateDto read(@PathVariable int id) {
+        return service.read(id);
+    }
+
+    /**
+     * Create a new gift certificate
+     *
+     * @param giftCertificateDto we want to create
+     * @return created gift certificate with its ID
+     */
+    @PostMapping("/gift-certificate")
+    @ResponseStatus(HttpStatus.CREATED)
+    public GiftCertificateDto create(@RequestBody GiftCertificateDto giftCertificateDto) {
+        return service.create(giftCertificateDto);
+    }
+
+    /**
+     * Update gift certificate
+     *
+     * @param giftCertificateDto modified
+     */
+    @PutMapping("/gift-certificate")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void update(@RequestBody GiftCertificateDto giftCertificateDto) {
+        service.update(giftCertificateDto);
+    }
+
+    /**
+     * Delete gift certificate by ID
+     *
+     * @param id of the gift certificate we want to delete
+     */
+    @DeleteMapping("/gift-certificate/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable int id) {
+        service.delete(id);
     }
 
 }
