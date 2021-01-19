@@ -1,19 +1,17 @@
 package com.epam.esm.service.certificate;
 
+import com.epam.esm.converter.SortAndOrderConverter;
 import com.epam.esm.dto.GiftCertificateDto;
-import com.epam.esm.dto.GiftCertificateQueryParametersDto;
 import com.epam.esm.dto.TagDto;
-import com.epam.esm.entity.GiftCertificate;
 import com.epam.esm.entity.GiftCertificateQueryParameters;
 import com.epam.esm.entity.Tag;
 import com.epam.esm.exception.NotExistIdEntityException;
-import com.epam.esm.repository.DatabaseRepository;
+import com.epam.esm.repository.certificate.GiftCertificateRepository;
 import com.epam.esm.repository.exception.DuplicateNameException;
 import com.epam.esm.repository.tag.TagRepository;
-import com.epam.esm.service.IService;
+import com.epam.esm.service.GiftCertificate;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,15 +19,12 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-public class GiftCertificateService implements IService<GiftCertificateDto, Integer> {
+public class GiftCertificateService implements GiftCertificate<GiftCertificateDto, Integer> {
 
-    private static final String GIFT_CERTIFICATE_REPOSITORY = "giftCertificateRepository";
     private static final String EMPTY_VALUE = "";
 
-
-    @Qualifier(GIFT_CERTIFICATE_REPOSITORY)
     @Autowired
-    private DatabaseRepository databaseRepository;
+    private GiftCertificateRepository giftCertificateRepository;
 
     @Autowired
     private TagRepository tagDAO;
@@ -39,8 +34,8 @@ public class GiftCertificateService implements IService<GiftCertificateDto, Inte
 
     @Override
     public List<GiftCertificateDto> readAll() {
-        List<GiftCertificate> giftCertificates = databaseRepository.readAll();
-        databaseRepository.joinCertificatesAndTags(giftCertificates);
+        List<com.epam.esm.entity.GiftCertificate> giftCertificates = giftCertificateRepository.readAll();
+        giftCertificateRepository.joinCertificatesAndTags(giftCertificates);
         return giftCertificates.stream()
                 .map(giftCertificate -> modelMapper.map(giftCertificate, GiftCertificateDto.class))
                 .collect(Collectors.toList());
@@ -48,36 +43,41 @@ public class GiftCertificateService implements IService<GiftCertificateDto, Inte
 
     @Override
     public GiftCertificateDto read(final Integer id) {
-        Optional<GiftCertificate> readGiftCertificate = databaseRepository.read(id);
-        if (readGiftCertificate.toString().equals("Optional.empty")) {
-            throw new NotExistIdEntityException("There is no gift certificate with ID = " + id + " in Database");
-        } else {
-            GiftCertificate giftCertificate = readGiftCertificate.get();
-            databaseRepository.joinCertificatesAndTags(Collections.singletonList((giftCertificate)));
+        Optional<com.epam.esm.entity.GiftCertificate> readGiftCertificate = giftCertificateRepository.read(id);
+        if (readGiftCertificate.isPresent()) {
+            com.epam.esm.entity.GiftCertificate giftCertificate = readGiftCertificate.get();
+            giftCertificateRepository.joinCertificatesAndTags(Collections.singletonList((giftCertificate)));
             return modelMapper.map(giftCertificate, GiftCertificateDto.class);
+        } else {
+            throw new NotExistIdEntityException("There is no gift certificate with ID = " + id + " in Database");
         }
     }
 
     @Override
-    public List<GiftCertificateDto> readByQueryParameters(GiftCertificateQueryParametersDto parametersDto) {
-        GiftCertificateQueryParameters parameters = modelMapper.map(parametersDto, GiftCertificateQueryParameters.class);
-        List<GiftCertificate> readGiftCertificates;
-        if (isAllQueryParametersNull(parameters)) {
-            readGiftCertificates = databaseRepository.readAll();
+    public List<GiftCertificateDto> readByQueryParameters(String tagName, String name, String description, String sortType, String orderType) {
+        if (isAllQueryParametersNull(tagName, name, description, sortType, orderType)) {
+            return giftCertificateRepository.readAll().stream().map(this::joinGiftCertificateAndTags).collect(Collectors.toList());
         } else {
-            prepareParametersForRequest(parameters);
-            readGiftCertificates = databaseRepository.readByQueryParameters(parameters);
+            String orderTypeConverter = SortAndOrderConverter.orderTypeConverter(orderType);
+            String sortTypeConverter = SortAndOrderConverter.sortTypeConverter(sortType);
+            HashMap<String, String> parametersMap = new HashMap<>();
+            parametersMap.put("tagName", tagName);
+            parametersMap.put("name", name);
+            parametersMap.put("description", description);
+            parametersMap.put("sortType", sortTypeConverter);
+            parametersMap.put("orderType", orderTypeConverter);
+            prepareParametersForRequest(parametersMap);
+            return giftCertificateRepository.readByQueryParameters(parametersMap).stream().map(this::joinGiftCertificateAndTags).collect(Collectors.toList());
         }
-        return readGiftCertificates.stream().map(this::joinGiftCertificateAndTags).collect(Collectors.toList());
     }
 
 
     @Override
     @Transactional
     public GiftCertificateDto create(GiftCertificateDto giftCertificateDto) {
-        GiftCertificate createdGiftCertificate;
+        com.epam.esm.entity.GiftCertificate createdGiftCertificate;
         createAndSetTags(giftCertificateDto);
-        createdGiftCertificate = (GiftCertificate) databaseRepository.create(modelMapper.map(giftCertificateDto, GiftCertificate.class));
+        createdGiftCertificate = (com.epam.esm.entity.GiftCertificate) giftCertificateRepository.create(modelMapper.map(giftCertificateDto, com.epam.esm.entity.GiftCertificate.class));
         return modelMapper.map(createdGiftCertificate, GiftCertificateDto.class);
     }
 
@@ -88,49 +88,47 @@ public class GiftCertificateService implements IService<GiftCertificateDto, Inte
         if (readGiftCertificateDto == null) {
             throw new NotExistIdEntityException("There is no gift certificate with ID = " + modifiedGiftCertificateDto.getId() + " in Database");
         }
-        GiftCertificate readGiftCertificate = modelMapper.map(readGiftCertificateDto, GiftCertificate.class);
-        GiftCertificate modifiedGiftCertificate = modelMapper.map(modifiedGiftCertificateDto, GiftCertificate.class);
+        com.epam.esm.entity.GiftCertificate readGiftCertificate = modelMapper.map(readGiftCertificateDto, com.epam.esm.entity.GiftCertificate.class);
+        com.epam.esm.entity.GiftCertificate modifiedGiftCertificate = modelMapper.map(modifiedGiftCertificateDto, com.epam.esm.entity.GiftCertificate.class);
         updateGiftCertificateFields(readGiftCertificate, modifiedGiftCertificate);
-        databaseRepository.update(readGiftCertificate);
+        giftCertificateRepository.update(readGiftCertificate);
     }
 
     @Override
     @Transactional
     public void delete(final Integer id) {
-        if (databaseRepository.delete(id) == 0) {
+        if (giftCertificateRepository.delete(id) == 0) {
             throw new NotExistIdEntityException("There is no gift certificate with ID = " + id + " in Database");
         }
     }
 
-    private GiftCertificateDto joinGiftCertificateAndTags(GiftCertificate giftCertificate) {
-        databaseRepository.joinCertificatesAndTags(Collections.singletonList(giftCertificate));
+    private GiftCertificateDto joinGiftCertificateAndTags(com.epam.esm.entity.GiftCertificate giftCertificate) {
+        giftCertificateRepository.joinCertificatesAndTags(Collections.singletonList(giftCertificate));
         return modelMapper.map(giftCertificate, GiftCertificateDto.class);
     }
 
-    private void prepareParametersForRequest(GiftCertificateQueryParameters parameters) {
-        if (Objects.isNull(parameters.getTagName())) {
-            parameters.setTagName(EMPTY_VALUE);
+    private void prepareParametersForRequest(HashMap<String, String> parameters) {
+        if (Objects.isNull(parameters.get("tagName"))) {
+            parameters.put("tagName", EMPTY_VALUE);
         }
-        if (Objects.isNull(parameters.getName())) {
-            parameters.setName(EMPTY_VALUE);
+        if (Objects.isNull(parameters.get("name"))) {
+            parameters.put("name", EMPTY_VALUE);
         }
-        if (Objects.isNull(parameters.getDescription())) {
-            parameters.setDescription(EMPTY_VALUE);
+        if (Objects.isNull(parameters.get("description"))) {
+            parameters.put("description", EMPTY_VALUE);
         }
-        if (Objects.isNull(parameters.getSortType())) {
-            parameters.setSortType(GiftCertificateQueryParameters.SortType.DEFAULT);
-            parameters.setOrderType(GiftCertificateQueryParameters.OrderType.DEFAULT);
+        if (Objects.isNull(parameters.get("sortType"))) {
+            parameters.put("sortType", GiftCertificateQueryParameters.SortType.DEFAULT.getSortType());
+            parameters.put("orderType", GiftCertificateQueryParameters.OrderType.DEFAULT.getOrderType());
         } else {
-            if (Objects.isNull(parameters.getOrderType())) {
-                parameters.setOrderType(GiftCertificateQueryParameters.OrderType.DEFAULT);
+            if (Objects.isNull(parameters.get("orderType"))) {
+                parameters.put("orderType", GiftCertificateQueryParameters.OrderType.DEFAULT.getOrderType());
             }
         }
     }
 
-    private boolean isAllQueryParametersNull(GiftCertificateQueryParameters parameters) {
-        return (Objects.isNull(parameters.getTagName()) && Objects.isNull(parameters.getName())
-                && Objects.isNull(parameters.getDescription()) && Objects.isNull(parameters.getSortType()) &&
-                Objects.isNull(parameters.getOrderType()));
+    private boolean isAllQueryParametersNull(String... parameters) {
+        return Arrays.stream(parameters).allMatch(Objects::isNull);
     }
 
     private void createAndSetTags(GiftCertificateDto giftCertificateDto) {
@@ -152,7 +150,7 @@ public class GiftCertificateService implements IService<GiftCertificateDto, Inte
 
     }
 
-    private void updateGiftCertificateFields(GiftCertificate readGiftCertificate, GiftCertificate
+    private void updateGiftCertificateFields(com.epam.esm.entity.GiftCertificate readGiftCertificate, com.epam.esm.entity.GiftCertificate
             modifiedGiftCertificate) {
         if (Objects.nonNull((modifiedGiftCertificate.getDuration()))) {
             readGiftCertificate.setDuration(modifiedGiftCertificate.getDuration());
@@ -169,7 +167,7 @@ public class GiftCertificateService implements IService<GiftCertificateDto, Inte
         if (Objects.nonNull(modifiedGiftCertificate.getTags())) {
             GiftCertificateDto modifiedGiftCertificateDto = modelMapper.map(modifiedGiftCertificate, GiftCertificateDto.class);
             createAndSetTags(modifiedGiftCertificateDto);
-            readGiftCertificate.setTags(modelMapper.map(modifiedGiftCertificateDto, GiftCertificate.class).getTags());
+            readGiftCertificate.setTags(modelMapper.map(modifiedGiftCertificateDto, com.epam.esm.entity.GiftCertificate.class).getTags());
         }
     }
 }

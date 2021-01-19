@@ -1,9 +1,8 @@
 package com.epam.esm.controller;
 
 import com.epam.esm.dto.TagDto;
-import com.epam.esm.service.IService;
+import com.epam.esm.service.tag.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,8 +13,7 @@ import java.util.List;
 public class TagController {
 
     @Autowired
-    @Qualifier("tagService")
-    private IService service;
+    private TagService service;
 
     @GetMapping("/tags")
     public List<TagDto> readAll() {
@@ -24,13 +22,13 @@ public class TagController {
 
     @GetMapping("/tag/{id}")
     public TagDto read(@PathVariable int id) {
-        return (TagDto) service.read(id);
+        return service.read(id);
     }
 
     @PostMapping("/tag")
     @ResponseStatus(HttpStatus.CREATED)
     public TagDto create(@RequestBody TagDto tagDto) {
-        return (TagDto) service.create(tagDto);
+        return service.create(tagDto);
     }
 
     @DeleteMapping("/tag/{id}")

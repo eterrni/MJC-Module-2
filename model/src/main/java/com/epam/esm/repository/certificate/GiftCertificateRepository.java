@@ -1,9 +1,8 @@
 package com.epam.esm.repository.certificate;
 
 import com.epam.esm.entity.GiftCertificate;
-import com.epam.esm.entity.GiftCertificateQueryParameters;
 import com.epam.esm.entity.Tag;
-import com.epam.esm.repository.DatabaseRepository;
+import com.epam.esm.repository.GiftCertificateInterface;
 import com.epam.esm.repository.tag.TagMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -13,11 +12,12 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.PreparedStatement;
 import java.sql.Statement;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
 @Repository
-public class GiftCertificateRepository implements DatabaseRepository<GiftCertificate, Integer> {
+public class GiftCertificateRepository implements GiftCertificateInterface<GiftCertificate, Integer> {
 
     private static final String SELECT_ALL_CERTIFICATES = "SELECT * FROM mjc_module_2.gift_certificate;";
     private static final String SELECT_CERTIFICATE_ID = "SELECT * FROM mjc_module_2.gift_certificate where gift_certificate.id=?;";
@@ -62,13 +62,13 @@ public class GiftCertificateRepository implements DatabaseRepository<GiftCertifi
     }
 
     @Override
-    public List<GiftCertificate> readByQueryParameters(GiftCertificateQueryParameters parameters) {
-        String query = GET_BY_QUERY_PARAMETERS + parameters.getSortType().getSortType() +
-                " " + parameters.getOrderType().getOrderType();
+    public List<GiftCertificate> readByQueryParameters(HashMap<String, String> parameters) {
+        String query = GET_BY_QUERY_PARAMETERS + parameters.get("sortType") +
+                " " + parameters.get("orderType");
         return jdbcTemplate.query(query, new Object[]{
-                parameters.getTagName(),
-                parameters.getName(),
-                parameters.getDescription(),
+                parameters.get("tagName"),
+                parameters.get("name"),
+                parameters.get("description"),
         }, giftCertificateMapper);
     }
 

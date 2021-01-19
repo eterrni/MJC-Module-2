@@ -1,9 +1,8 @@
 package com.epam.esm.repository.tag;
 
 import com.epam.esm.entity.GiftCertificate;
-import com.epam.esm.entity.GiftCertificateQueryParameters;
 import com.epam.esm.entity.Tag;
-import com.epam.esm.repository.DatabaseRepository;
+import com.epam.esm.repository.TagInterface;
 import com.epam.esm.repository.certificate.GiftCertificateMapper;
 import com.epam.esm.repository.exception.DuplicateNameException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +17,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public class TagRepository implements DatabaseRepository<Tag, Integer> {
+public class TagRepository implements TagInterface<Tag, Integer> {
     private static final String GET_TAG_BY_NAME = "SELECT * FROM mjc_module_2.tag where mjc_module_2.tag.name_tag=?";
     private static final String GET_TAG_BY_ID = "SELECT * FROM mjc_module_2.tag where mjc_module_2.tag.id_tag=?";
     private static final String GET_ALL_TAGS = "SELECT * FROM mjc_module_2.tag";
@@ -86,11 +85,6 @@ public class TagRepository implements DatabaseRepository<Tag, Integer> {
         }
     }
 
-    @Override
-    public List<Tag> readByQueryParameters(GiftCertificateQueryParameters parameters) {
-        throw new UnsupportedOperationException("");
-    }
-
     public Tag readTagByName(String tagName) {
         Optional<Tag> tag = jdbcTemplate.query(GET_TAG_BY_NAME, new Object[]{tagName}, tagMapper).stream().findAny();
         return tag.get();
@@ -100,9 +94,5 @@ public class TagRepository implements DatabaseRepository<Tag, Integer> {
         return jdbcTemplate.query(GET_TAG_BY_NAME, new Object[]{tagName}, tagMapper).stream().findAny().isPresent();
     }
 
-    @Override
-    public Integer update(Tag entity) {
-        throw new UnsupportedOperationException("Unsupported operation UPDATE for tag");
-    }
 
 }
