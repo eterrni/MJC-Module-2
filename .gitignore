@@ -9,9 +9,9 @@ gradlew
 #Ignore IntelliJ folders
 /.settings
 /build
-/web/build/libs
-/service/build/libs
-/model/build/libs
+/web/build
+/service/build
+/model/build
 /gradle
 /.gradle
 /.classpath

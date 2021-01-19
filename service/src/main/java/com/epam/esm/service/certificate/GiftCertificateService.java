@@ -3,13 +3,14 @@ package com.epam.esm.service.certificate;
 import com.epam.esm.converter.SortAndOrderConverter;
 import com.epam.esm.dto.GiftCertificateDto;
 import com.epam.esm.dto.TagDto;
+import com.epam.esm.entity.GiftCertificate;
 import com.epam.esm.entity.GiftCertificateQueryParameters;
 import com.epam.esm.entity.Tag;
 import com.epam.esm.exception.NotExistIdEntityException;
 import com.epam.esm.repository.certificate.GiftCertificateRepository;
 import com.epam.esm.repository.exception.DuplicateNameException;
 import com.epam.esm.repository.tag.TagRepository;
-import com.epam.esm.service.GiftCertificate;
+import com.epam.esm.service.GiftCertificateServiceInterface;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,7 +20,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-public class GiftCertificateService implements GiftCertificate<GiftCertificateDto, Integer> {
+public class GiftCertificateService implements GiftCertificateServiceInterface<GiftCertificateDto, Integer> {
 
     private static final String EMPTY_VALUE = "";
 
@@ -34,7 +35,7 @@ public class GiftCertificateService implements GiftCertificate<GiftCertificateDt
 
     @Override
     public List<GiftCertificateDto> readAll() {
-        List<com.epam.esm.entity.GiftCertificate> giftCertificates = giftCertificateRepository.readAll();
+        List<GiftCertificate> giftCertificates = giftCertificateRepository.readAll();
         giftCertificateRepository.joinCertificatesAndTags(giftCertificates);
         return giftCertificates.stream()
                 .map(giftCertificate -> modelMapper.map(giftCertificate, GiftCertificateDto.class))
@@ -43,9 +44,9 @@ public class GiftCertificateService implements GiftCertificate<GiftCertificateDt
 
     @Override
     public GiftCertificateDto read(final Integer id) {
-        Optional<com.epam.esm.entity.GiftCertificate> readGiftCertificate = giftCertificateRepository.read(id);
+        Optional<GiftCertificate> readGiftCertificate = giftCertificateRepository.read(id);
         if (readGiftCertificate.isPresent()) {
-            com.epam.esm.entity.GiftCertificate giftCertificate = readGiftCertificate.get();
+            GiftCertificate giftCertificate = readGiftCertificate.get();
             giftCertificateRepository.joinCertificatesAndTags(Collections.singletonList((giftCertificate)));
             return modelMapper.map(giftCertificate, GiftCertificateDto.class);
         } else {
@@ -75,9 +76,9 @@ public class GiftCertificateService implements GiftCertificate<GiftCertificateDt
     @Override
     @Transactional
     public GiftCertificateDto create(GiftCertificateDto giftCertificateDto) {
-        com.epam.esm.entity.GiftCertificate createdGiftCertificate;
+        GiftCertificate createdGiftCertificate;
         createAndSetTags(giftCertificateDto);
-        createdGiftCertificate = (com.epam.esm.entity.GiftCertificate) giftCertificateRepository.create(modelMapper.map(giftCertificateDto, com.epam.esm.entity.GiftCertificate.class));
+        createdGiftCertificate =giftCertificateRepository.create(modelMapper.map(giftCertificateDto, GiftCertificate.class));
         return modelMapper.map(createdGiftCertificate, GiftCertificateDto.class);
     }
 
@@ -88,8 +89,8 @@ public class GiftCertificateService implements GiftCertificate<GiftCertificateDt
         if (readGiftCertificateDto == null) {
             throw new NotExistIdEntityException("There is no gift certificate with ID = " + modifiedGiftCertificateDto.getId() + " in Database");
         }
-        com.epam.esm.entity.GiftCertificate readGiftCertificate = modelMapper.map(readGiftCertificateDto, com.epam.esm.entity.GiftCertificate.class);
-        com.epam.esm.entity.GiftCertificate modifiedGiftCertificate = modelMapper.map(modifiedGiftCertificateDto, com.epam.esm.entity.GiftCertificate.class);
+        GiftCertificate readGiftCertificate = modelMapper.map(readGiftCertificateDto, GiftCertificate.class);
+        GiftCertificate modifiedGiftCertificate = modelMapper.map(modifiedGiftCertificateDto, GiftCertificate.class);
         updateGiftCertificateFields(readGiftCertificate, modifiedGiftCertificate);
         giftCertificateRepository.update(readGiftCertificate);
     }
@@ -102,7 +103,7 @@ public class GiftCertificateService implements GiftCertificate<GiftCertificateDt
         }
     }
 
-    private GiftCertificateDto joinGiftCertificateAndTags(com.epam.esm.entity.GiftCertificate giftCertificate) {
+    private GiftCertificateDto joinGiftCertificateAndTags(GiftCertificate giftCertificate) {
         giftCertificateRepository.joinCertificatesAndTags(Collections.singletonList(giftCertificate));
         return modelMapper.map(giftCertificate, GiftCertificateDto.class);
     }
@@ -150,7 +151,7 @@ public class GiftCertificateService implements GiftCertificate<GiftCertificateDt
 
     }
 
-    private void updateGiftCertificateFields(com.epam.esm.entity.GiftCertificate readGiftCertificate, com.epam.esm.entity.GiftCertificate
+    private void updateGiftCertificateFields(GiftCertificate readGiftCertificate, GiftCertificate
             modifiedGiftCertificate) {
         if (Objects.nonNull((modifiedGiftCertificate.getDuration()))) {
             readGiftCertificate.setDuration(modifiedGiftCertificate.getDuration());
@@ -167,7 +168,7 @@ public class GiftCertificateService implements GiftCertificate<GiftCertificateDt
         if (Objects.nonNull(modifiedGiftCertificate.getTags())) {
             GiftCertificateDto modifiedGiftCertificateDto = modelMapper.map(modifiedGiftCertificate, GiftCertificateDto.class);
             createAndSetTags(modifiedGiftCertificateDto);
-            readGiftCertificate.setTags(modelMapper.map(modifiedGiftCertificateDto, com.epam.esm.entity.GiftCertificate.class).getTags());
+            readGiftCertificate.setTags(modelMapper.map(modifiedGiftCertificateDto, GiftCertificate.class).getTags());
         }
     }
 }

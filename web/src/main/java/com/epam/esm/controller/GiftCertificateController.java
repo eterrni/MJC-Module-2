@@ -39,7 +39,7 @@ public class GiftCertificateController {
     }
 
     @GetMapping("/gift-certificates")
-    public List<GiftCertificateDto> readByQueryParameters(
+    public List<GiftCertificateDto> readAll(
             @RequestParam(value = "tagName", required = false) String tagName,
             @RequestParam(value = "name", required = false) String name,
             @RequestParam(value = "description", required = false) String description,
