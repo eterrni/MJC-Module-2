@@ -1,20 +1,19 @@
 package com.epam.esm.service;
 
+import com.epam.esm.dto.GiftCertificateDto;
+
 import java.util.List;
 
 /**
  * An interface that inherits the CRD interface and complements it with the methods required for the gift certificate
- *
- * @param <T> is a generic param which must be inherited from Entity class
- * @param <K> is a generic param which represents a key param
  */
-public interface GiftCertificateServiceInterface<T, K> extends CRD<T, K> {
+public interface IGiftCertificateService extends ICRDService<GiftCertificateDto, Integer> {
     /**
      * Update entity
      *
      * @param entity modified
      */
-    void update(final T entity);
+    void update(final GiftCertificateDto entity);
 
     /**
      * Get all entity by search parameters
@@ -26,5 +25,5 @@ public interface GiftCertificateServiceInterface<T, K> extends CRD<T, K> {
      * @param orderType   the order type
      * @return List of found gift certificates
      */
-    List<T> readByQueryParameters(String tagName, String name, String description, String sortType, String orderType);
+    List<GiftCertificateDto> readByQueryParameters(String tagName, String name, String description, String sortType, String orderType);
 }

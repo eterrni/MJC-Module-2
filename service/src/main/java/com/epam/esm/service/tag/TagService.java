@@ -4,7 +4,7 @@ import com.epam.esm.dto.TagDto;
 import com.epam.esm.entity.Tag;
 import com.epam.esm.exception.NotExistIdEntityException;
 import com.epam.esm.repository.tag.TagRepository;
-import com.epam.esm.service.CRD;
+import com.epam.esm.service.ICRDService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,12 +16,17 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
-public class TagService implements CRD<TagDto, Integer> {
+public class TagService implements ICRDService<TagDto, Integer> {
+
+    private TagRepository tagRepository;
+
+    private ModelMapper modelMapper;
 
     @Autowired
-    private TagRepository tagRepository;
-    @Autowired
-    private ModelMapper modelMapper;
+    public TagService(TagRepository tagRepository, ModelMapper modelMapper) {
+        this.tagRepository = tagRepository;
+        this.modelMapper = modelMapper;
+    }
 
     @Override
     public List<TagDto> readAll() {

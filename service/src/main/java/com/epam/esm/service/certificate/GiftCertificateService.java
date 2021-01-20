@@ -10,7 +10,7 @@ import com.epam.esm.exception.NotExistIdEntityException;
 import com.epam.esm.repository.certificate.GiftCertificateRepository;
 import com.epam.esm.repository.exception.DuplicateNameException;
 import com.epam.esm.repository.tag.TagRepository;
-import com.epam.esm.service.GiftCertificateServiceInterface;
+import com.epam.esm.service.IGiftCertificateService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,18 +20,22 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-public class GiftCertificateService implements GiftCertificateServiceInterface<GiftCertificateDto, Integer> {
+public class GiftCertificateService implements IGiftCertificateService {
 
     private static final String EMPTY_VALUE = "";
 
-    @Autowired
     private GiftCertificateRepository giftCertificateRepository;
 
-    @Autowired
     private TagRepository tagDAO;
 
-    @Autowired
     private ModelMapper modelMapper;
+
+    @Autowired
+    public GiftCertificateService(GiftCertificateRepository giftCertificateRepository, TagRepository tagDAO, ModelMapper modelMapper) {
+        this.giftCertificateRepository = giftCertificateRepository;
+        this.tagDAO = tagDAO;
+        this.modelMapper = modelMapper;
+    }
 
     @Override
     public List<GiftCertificateDto> readAll() {
@@ -62,6 +66,7 @@ public class GiftCertificateService implements GiftCertificateServiceInterface<G
             String orderTypeConverter = SortAndOrderConverter.orderTypeConverter(orderType);
             String sortTypeConverter = SortAndOrderConverter.sortTypeConverter(sortType);
             HashMap<String, String> parametersMap = new HashMap<>();
+            // TO DO
             parametersMap.put("tagName", tagName);
             parametersMap.put("name", name);
             parametersMap.put("description", description);
@@ -78,7 +83,7 @@ public class GiftCertificateService implements GiftCertificateServiceInterface<G
     public GiftCertificateDto create(GiftCertificateDto giftCertificateDto) {
         GiftCertificate createdGiftCertificate;
         createAndSetTags(giftCertificateDto);
-        createdGiftCertificate =giftCertificateRepository.create(modelMapper.map(giftCertificateDto, GiftCertificate.class));
+        createdGiftCertificate = giftCertificateRepository.create(modelMapper.map(giftCertificateDto, GiftCertificate.class));
         return modelMapper.map(createdGiftCertificate, GiftCertificateDto.class);
     }
 

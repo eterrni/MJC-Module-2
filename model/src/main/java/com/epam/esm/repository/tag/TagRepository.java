@@ -2,7 +2,7 @@ package com.epam.esm.repository.tag;
 
 import com.epam.esm.entity.GiftCertificate;
 import com.epam.esm.entity.Tag;
-import com.epam.esm.repository.TagRepositoryInterface;
+import com.epam.esm.repository.ITagRepository;
 import com.epam.esm.repository.certificate.GiftCertificateMapper;
 import com.epam.esm.repository.exception.DuplicateNameException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public class TagRepository implements TagRepositoryInterface<Tag, Integer> {
+public class TagRepository implements ITagRepository {
     private static final String GET_TAG_BY_NAME = "SELECT * FROM mjc_module_2.tag where mjc_module_2.tag.name_tag=?";
     private static final String GET_TAG_BY_ID = "SELECT * FROM mjc_module_2.tag where mjc_module_2.tag.id_tag=?";
     private static final String GET_ALL_TAGS = "SELECT * FROM mjc_module_2.tag";
@@ -38,14 +38,18 @@ public class TagRepository implements TagRepositoryInterface<Tag, Integer> {
 
     private static final Integer PARAMETER_INDEX_TAG_NAME = 1;
 
-    @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    @Autowired
     private TagMapper tagMapper;
 
-    @Autowired
     private GiftCertificateMapper giftCertificateMapper;
+
+    @Autowired
+    public TagRepository(JdbcTemplate jdbcTemplate, TagMapper tagMapper, GiftCertificateMapper giftCertificateMapper) {
+        this.jdbcTemplate = jdbcTemplate;
+        this.tagMapper = tagMapper;
+        this.giftCertificateMapper = giftCertificateMapper;
+    }
 
     @Override
     public List<Tag> readAll() {

@@ -2,7 +2,7 @@ package com.epam.esm.repository.certificate;
 
 import com.epam.esm.entity.GiftCertificate;
 import com.epam.esm.entity.Tag;
-import com.epam.esm.repository.GiftCertificateRepositoryInterface;
+import com.epam.esm.repository.IGiftCertificateRepository;
 import com.epam.esm.repository.tag.TagMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public class GiftCertificateRepository implements GiftCertificateRepositoryInterface<GiftCertificate, Integer> {
+public class GiftCertificateRepository implements IGiftCertificateRepository {
 
     private static final String SELECT_ALL_CERTIFICATES = "SELECT * FROM mjc_module_2.gift_certificate;";
     private static final String SELECT_CERTIFICATE_ID = "SELECT * FROM mjc_module_2.gift_certificate where gift_certificate.id=?;";
@@ -42,14 +42,18 @@ public class GiftCertificateRepository implements GiftCertificateRepositoryInter
             "mjc_module_2.gift_certificate.name LIKE concat(?, '%') AND\n" +
             "mjc_module_2.gift_certificate.description LIKE concat(?, '%') GROUP BY mjc_module_2.gift_certificate.id ";
 
-    @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    @Autowired
     private GiftCertificateMapper giftCertificateMapper;
 
-    @Autowired
     private TagMapper tagMapper;
+
+    @Autowired
+    public GiftCertificateRepository(JdbcTemplate jdbcTemplate, GiftCertificateMapper giftCertificateMapper, TagMapper tagMapper) {
+        this.jdbcTemplate = jdbcTemplate;
+        this.giftCertificateMapper = giftCertificateMapper;
+        this.tagMapper = tagMapper;
+    }
 
     @Override
     public List<GiftCertificate> readAll() {
