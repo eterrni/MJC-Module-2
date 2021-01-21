@@ -9,6 +9,7 @@ import com.epam.esm.entity.Tag;
 import com.epam.esm.exception.NotExistIdEntityException;
 import com.epam.esm.repository.certificate.GiftCertificateRepository;
 import com.epam.esm.repository.tag.TagRepository;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -16,6 +17,8 @@ import org.mockito.MockitoAnnotations;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.event.annotation.BeforeTestClass;
+import org.springframework.test.context.event.annotation.BeforeTestExecution;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -51,7 +54,7 @@ public class GiftCertificateServiceTest {
     }
 
     @Test
-    public void readAllGiftCertificatePositiveTest() {
+    public void readAllGiftCertificate_Successful() {
         //given
         Integer giftCertificateID = 1;
         String name = "abc";
@@ -62,10 +65,7 @@ public class GiftCertificateServiceTest {
         LocalDateTime lastUpdateDate = LocalDateTime.now(ZoneId.systemDefault());
 
         List<Tag> tags = new ArrayList<>();
-        tags.add(new Tag(1, "tag"));
-
         List<TagDto> tagDtos = new ArrayList<>();
-        tagDtos.add(new TagDto(1, "tag"));
 
         GiftCertificate giftCertificate = new GiftCertificate(giftCertificateID, name, description, price, duration, createdDate, lastUpdateDate, tags);
         List<GiftCertificate> giftCertificates = new ArrayList<>();
@@ -82,7 +82,7 @@ public class GiftCertificateServiceTest {
     }
 
     @Test
-    public void readAllGiftCertificateNegativeTest() {
+    public void readAllGiftCertificate_TagsNotJoinToCertificates_Unsuccessful() {
         //given
         Integer giftCertificateID = 1;
         String name = "abc";
@@ -93,10 +93,7 @@ public class GiftCertificateServiceTest {
         LocalDateTime lastUpdateDate = LocalDateTime.now(ZoneId.systemDefault());
 
         List<Tag> tags = new ArrayList<>();
-        tags.add(new Tag(1, "tag"));
-
         List<TagDto> tagDtos = new ArrayList<>();
-        tagDtos.add(new TagDto(1, "tag"));
 
         GiftCertificate giftCertificate = new GiftCertificate(giftCertificateID, name, description, price, duration, createdDate, lastUpdateDate, tags);
         List<GiftCertificate> giftCertificates = new ArrayList<>();
@@ -114,7 +111,7 @@ public class GiftCertificateServiceTest {
     }
 
     @Test
-    public void readGiftCertificatePositiveTest() {
+    public void readGiftCertificate_Successful() {
         // given
         Integer giftCertificateID = 1;
         String name = "abc";
@@ -124,9 +121,7 @@ public class GiftCertificateServiceTest {
         LocalDateTime createdDate = LocalDateTime.now(ZoneId.systemDefault());
         LocalDateTime lastUpdateDate = LocalDateTime.now(ZoneId.systemDefault());
         List<Tag> tags = new ArrayList<>();
-        tags.add(new Tag(1, "tag"));
         List<TagDto> tagDtos = new ArrayList<>();
-        tagDtos.add(new TagDto(1, "tag"));
 
         Optional<GiftCertificate> readGiftCertificateOptional = Optional.of(
                 new GiftCertificate(giftCertificateID, name, description, price, duration, createdDate, lastUpdateDate, tags)
@@ -142,7 +137,7 @@ public class GiftCertificateServiceTest {
     }
 
     @Test
-    public void readGiftCertificateNegativeTest() {
+    public void readGiftCertificateNotExistId_ThrownNotExistIdEntityException() {
         // given
         Integer giftCertificateID = 123;
         // when
@@ -152,7 +147,7 @@ public class GiftCertificateServiceTest {
     }
 
     @Test
-    public void deletePositiveTest() {
+    public void deleteGiftCertificate_Successful() {
         // given
         Integer giftCertificateID = 1;
         // when
@@ -162,7 +157,7 @@ public class GiftCertificateServiceTest {
     }
 
     @Test
-    public void deleteNegativeTest() {
+    public void deleteNotExistIdGiftCertificate_ThrownNotExistIdEntityException() {
         // given
         Integer giftCertificateID = 123;
         // when
@@ -172,7 +167,7 @@ public class GiftCertificateServiceTest {
     }
 
     @Test
-    public void updatePositiveTest() {
+    public void updateGiftCertificate_Successful() {
         // given
         Integer modifiedGiftCertificateId = 1;
         String modifiedGiftCertificateName = "modifiedName";
@@ -198,7 +193,7 @@ public class GiftCertificateServiceTest {
     }
 
     @Test
-    public void updateNegativeTest() {
+    public void updateGiftCertificate_NotExistId_ThrownNotExistIdException() {
         // given
         Integer modifiedGiftCertificateId = 1321;
         String modifiedGiftCertificateName = "newName";
