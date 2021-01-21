@@ -23,6 +23,12 @@ import java.util.stream.Collectors;
 public class GiftCertificateService implements IGiftCertificateService {
 
     private static final String EMPTY_VALUE = "";
+    private static final String PARAMETER_TAG_NAME = "tagName";
+    private static final String PARAMETER_NAME = "name";
+    private static final String PARAMETER_DESCRIPTION = "description";
+    private static final String PARAMETER_SORT_TYPE = "sortType";
+    private static final String PARAMETER_ORDER_TYPE = "orderType";
+
 
     private GiftCertificateRepository giftCertificateRepository;
 
@@ -66,12 +72,11 @@ public class GiftCertificateService implements IGiftCertificateService {
             String orderTypeConverter = SortAndOrderConverter.orderTypeConverter(orderType);
             String sortTypeConverter = SortAndOrderConverter.sortTypeConverter(sortType);
             HashMap<String, String> parametersMap = new HashMap<>();
-            // TO DO
-            parametersMap.put("tagName", tagName);
-            parametersMap.put("name", name);
-            parametersMap.put("description", description);
-            parametersMap.put("sortType", sortTypeConverter);
-            parametersMap.put("orderType", orderTypeConverter);
+            parametersMap.put(PARAMETER_TAG_NAME, tagName);
+            parametersMap.put(PARAMETER_NAME, name);
+            parametersMap.put(PARAMETER_DESCRIPTION, description);
+            parametersMap.put(PARAMETER_SORT_TYPE, sortTypeConverter);
+            parametersMap.put(PARAMETER_ORDER_TYPE, orderTypeConverter);
             prepareParametersForRequest(parametersMap);
             return giftCertificateRepository.readByQueryParameters(parametersMap).stream().map(this::joinGiftCertificateAndTags).collect(Collectors.toList());
         }
@@ -156,7 +161,7 @@ public class GiftCertificateService implements IGiftCertificateService {
 
     }
 
-    private void updateGiftCertificateFields(GiftCertificate readGiftCertificate, GiftCertificate
+    protected void updateGiftCertificateFields(GiftCertificate readGiftCertificate, GiftCertificate
             modifiedGiftCertificate) {
         if (Objects.nonNull((modifiedGiftCertificate.getDuration()))) {
             readGiftCertificate.setDuration(modifiedGiftCertificate.getDuration());
