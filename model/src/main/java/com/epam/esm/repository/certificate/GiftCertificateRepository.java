@@ -7,7 +7,6 @@ import com.epam.esm.repository.exception.NotEnoughDataForRegistrationException;
 import com.epam.esm.repository.tag.TagMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
@@ -23,9 +22,9 @@ public class GiftCertificateRepository implements IGiftCertificateRepository {
 
     private static final String SELECT_ALL_CERTIFICATES = "SELECT * FROM gift_certificate;";
     private static final String SELECT_CERTIFICATE_ID = "SELECT * FROM gift_certificate where gift_certificate.id=?;";
-    private static final String SELECT_TAGS_BY_CERTIFICATE_ID = "SELECT id_tag,name_tag FROM mjc_module_2.gift_certificate_has_tag\n" +
-            "join mjc_module_2.tag\n" +
-            "on mjc_module_2.gift_certificate_has_tag.tag_id_tag = mjc_module_2.tag.id_tag\n" +
+    private static final String SELECT_TAGS_BY_CERTIFICATE_ID = "SELECT id_tag,name_tag FROM gift_certificate_has_tag\n" +
+            "join tag\n" +
+            "on gift_certificate_has_tag.tag_id_tag = tag.id_tag\n" +
             "where gift_certificate_id_gift_certificate=?;";
     private static final String INSERT_CERTIFICATE = "INSERT INTO `gift_certificate` (`name`, `description`, `price`, `duration`) VALUES (?, ?, ?, ?);";
     private static final String CREATE_CERTIFICATE_HAS_TAG = "INSERT INTO `gift_certificate_has_tag` (`gift_certificate_id_gift_certificate`, `tag_id_tag`) VALUES (?, ?);\n";
@@ -90,10 +89,11 @@ public class GiftCertificateRepository implements IGiftCertificateRepository {
                 preparedStatement.setInt(4, giftCertificate.getDuration());
                 return preparedStatement;
             }, keyHolder);
-        } catch(Exception e){
+        } catch (Exception e) {
             throw new NotEnoughDataForRegistrationException("Invalid parameters for creating a gift certificate. To create a certificate, you must write the name, description, price, and duration of the certificate");
         }
-        GiftCertificate createdGiftCertificate = jdbcTemplate.query(SELECT_CERTIFICATE_ID, new Object[]{keyHolder.getKey().intValue()}, giftCertificateMapper).stream().findFirst().get();
+        Integer generatedID = (Integer) keyHolder.getKeys().entrySet().iterator().next().getValue();
+        GiftCertificate createdGiftCertificate = jdbcTemplate.query(SELECT_CERTIFICATE_ID, new Object[]{generatedID}, giftCertificateMapper).stream().findFirst().get();
         giftCertificate.setId(createdGiftCertificate.getId());
         giftCertificate.setCreateDate(createdGiftCertificate.getCreateDate());
         giftCertificate.setLastUpdateDate(createdGiftCertificate.getLastUpdateDate());

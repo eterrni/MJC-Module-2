@@ -2,6 +2,7 @@ package com.epam.esm.repository.certificate;
 
 import com.epam.esm.entity.GiftCertificate;
 import com.epam.esm.entity.Tag;
+import com.epam.esm.repository.exception.NotEnoughDataForRegistrationException;
 import com.epam.esm.repository.tag.TagMapper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,8 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 class GiftCertificateRepositoryTest {
     private EmbeddedDatabase embeddedDatabase;
@@ -162,9 +162,8 @@ class GiftCertificateRepositoryTest {
         assertEquals(0, updateNumber);
     }
 
-    // TO DO
     @Test
-    void create_returnsEntityWithID() {
+    void create_returnCreatedEntityWith_Id_CreatedDate_LastUpdateDate() {
         // given
         GiftCertificate giftCertificate = new GiftCertificate();
         giftCertificate.setName("newCertificate");
@@ -174,10 +173,36 @@ class GiftCertificateRepositoryTest {
         // when
         GiftCertificate createdGiftCertificate = giftCertificateRepository.create(giftCertificate);
         // then
-        assertEquals(3,createdGiftCertificate.getId());
+        assertEquals(3, createdGiftCertificate.getId());
     }
-    // TO DO
+
     @Test
-    void joinCertificatesAndTags() {
+    void create_notAllParametersWerePassedForRegistration_thrownNotEnoughDataForRegistrationException() {
+        // given
+        GiftCertificate giftCertificate = new GiftCertificate();
+        giftCertificate.setDescription("description");
+        giftCertificate.setPrice(BigDecimal.valueOf(1230));
+        giftCertificate.setDuration(21);
+        // when
+        // then
+        assertThrows(NotEnoughDataForRegistrationException.class, () -> giftCertificateRepository.create(giftCertificate));
+    }
+
+    @Test
+    void joinCertificatesAndTags_returnsCertificatesWithTagsAttachedToThem() {
+        // given
+        List<GiftCertificate> giftCertificateListWithoutTags = new ArrayList<>();
+        LocalDateTime createDateFirstGiftCertificate = LocalDateTime.of(2021, 01, 22, 11, 11, 11);
+        LocalDateTime lastUpdateDateFirstGiftCertificate = LocalDateTime.of(2021, 01, 22, 11, 11, 11);
+        LocalDateTime createDateSecondGiftCertificate = LocalDateTime.of(2021, 01, 22, 22, 22, 22);
+        LocalDateTime lastUpdateDateSecondGiftCertificate = LocalDateTime.of(2021, 01, 22, 22, 22, 22);
+        giftCertificateListWithoutTags.add(new GiftCertificate(1, "name1", "description1", new BigDecimal(11), 11, createDateFirstGiftCertificate, lastUpdateDateFirstGiftCertificate, null));
+        giftCertificateListWithoutTags.add(new GiftCertificate(2, "name2", "description2", new BigDecimal(22), 22, createDateSecondGiftCertificate, lastUpdateDateSecondGiftCertificate, null));
+        // when
+        giftCertificateRepository.joinCertificatesAndTags(giftCertificateListWithoutTags);
+        // then
+        for (GiftCertificate giftCertificate : giftCertificateListWithoutTags) {
+            assertNotEquals(giftCertificate.getTags(), null);
+        }
     }
 }
