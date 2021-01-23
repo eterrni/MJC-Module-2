@@ -32,16 +32,16 @@ public class GiftCertificateRepository implements IGiftCertificateRepository {
     private static final String DELETE_GIFT_CERTIFICATE = "DELETE FROM gift_certificate WHERE id = ?";
     private static final String DELETE_GIFT_CERTIFICATE_HAS_TAG = "DELETE FROM gift_certificate_has_tag where gift_certificate_id_gift_certificate=?;";
     private static final String GET_BY_QUERY_PARAMETERS = "SELECT \n" +
-            "mjc_module_2.gift_certificate.id, mjc_module_2.gift_certificate.name,\n" +
-            "mjc_module_2.gift_certificate.description, mjc_module_2.gift_certificate.price,\n" +
-            "mjc_module_2.gift_certificate.duration, mjc_module_2.gift_certificate.create_date,\n" +
-            "mjc_module_2.gift_certificate.last_update_date \n" +
-            "FROM mjc_module_2.gift_certificate \n" +
-            "LEFT JOIN mjc_module_2.gift_certificate_has_tag ON mjc_module_2.gift_certificate.id = mjc_module_2.gift_certificate_has_tag.gift_certificate_id_gift_certificate\n" +
-            "LEFT JOIN mjc_module_2.tag ON mjc_module_2.gift_certificate_has_tag.tag_id_tag = mjc_module_2.tag.id_tag \n" +
-            "WHERE mjc_module_2.tag.name_tag LIKE concat(?, '%') AND \n" +
-            "mjc_module_2.gift_certificate.name LIKE concat(?, '%') AND\n" +
-            "mjc_module_2.gift_certificate.description LIKE concat(?, '%') GROUP BY mjc_module_2.gift_certificate.id ";
+            "gift_certificate.id, gift_certificate.name,\n" +
+            "gift_certificate.description, gift_certificate.price,\n" +
+            "gift_certificate.duration, gift_certificate.create_date,\n" +
+            "gift_certificate.last_update_date \n" +
+            "FROM gift_certificate \n" +
+            "LEFT JOIN gift_certificate_has_tag ON gift_certificate.id = gift_certificate_has_tag.gift_certificate_id_gift_certificate\n" +
+            "LEFT JOIN tag ON gift_certificate_has_tag.tag_id_tag = tag.id_tag \n" +
+            "WHERE tag.name_tag LIKE concat(?, '%') AND \n" +
+            "gift_certificate.name LIKE concat(?, '%') AND\n" +
+            "gift_certificate.description LIKE concat(?, '%') GROUP BY gift_certificate.id ";
 
     private JdbcTemplate jdbcTemplate;
 

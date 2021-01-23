@@ -15,6 +15,7 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
@@ -204,5 +205,38 @@ class GiftCertificateRepositoryTest {
         for (GiftCertificate giftCertificate : giftCertificateListWithoutTags) {
             assertNotEquals(giftCertificate.getTags(), null);
         }
+    }
+
+    @Test
+    void readByQueryParameters_readGiftCertificatesBy_Name_TagName_Description() {
+        // given
+        HashMap<String, String> parameters = new HashMap<>();
+        parameters.put("tagName", "nameTag1");
+        parameters.put("name", "");
+        parameters.put("description", "");
+        parameters.put("sortType", "");
+        parameters.put("orderType", "");
+
+        HashMap<String, String> parameters2 = new HashMap<>();
+        parameters2.put("tagName", "");
+        parameters2.put("name", "name2");
+        parameters2.put("description", "");
+        parameters2.put("sortType", "");
+        parameters2.put("orderType", "");
+
+        HashMap<String, String> parameters3 = new HashMap<>();
+        parameters3.put("tagName", "");
+        parameters3.put("name", "");
+        parameters3.put("description", "description1");
+        parameters3.put("sortType", "");
+        parameters3.put("orderType", "");
+        // when
+        List<GiftCertificate> giftCertificates = giftCertificateRepository.readByQueryParameters(parameters);
+        List<GiftCertificate> giftCertificates2 = giftCertificateRepository.readByQueryParameters(parameters2);
+        List<GiftCertificate> giftCertificates3 = giftCertificateRepository.readByQueryParameters(parameters3);
+        // then
+        assertEquals("name1", giftCertificates.get(0).getName());
+        assertEquals("name2", giftCertificates2.get(0).getName());
+        assertEquals("name1", giftCertificates3.get(0).getName());
     }
 }
