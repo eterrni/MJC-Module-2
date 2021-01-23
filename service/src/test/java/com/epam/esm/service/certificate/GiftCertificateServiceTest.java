@@ -9,7 +9,6 @@ import com.epam.esm.entity.Tag;
 import com.epam.esm.exception.NotExistIdEntityException;
 import com.epam.esm.repository.certificate.GiftCertificateRepository;
 import com.epam.esm.repository.tag.TagRepository;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -17,8 +16,6 @@ import org.mockito.MockitoAnnotations;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.event.annotation.BeforeTestClass;
-import org.springframework.test.context.event.annotation.BeforeTestExecution;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -30,7 +27,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
-@ContextConfiguration(classes = {ServiceConfiguration.class})
+@ContextConfiguration(classes = ServiceConfiguration.class)
 public class GiftCertificateServiceTest {
     @Autowired
     @Mock
@@ -54,7 +51,7 @@ public class GiftCertificateServiceTest {
     }
 
     @Test
-    public void readAllGiftCertificate_Successful() {
+    public void readAll_returnsTheExpectedResult() {
         //given
         Integer giftCertificateID = 1;
         String name = "abc";
@@ -82,7 +79,7 @@ public class GiftCertificateServiceTest {
     }
 
     @Test
-    public void readAllGiftCertificate_TagsNotJoinToCertificates_Unsuccessful() {
+    public void readAll_tagsNotJoinToCertificates() {
         //given
         Integer giftCertificateID = 1;
         String name = "abc";
@@ -111,7 +108,7 @@ public class GiftCertificateServiceTest {
     }
 
     @Test
-    public void readGiftCertificate_Successful() {
+    public void read_returnsTheExpectedResult() {
         // given
         Integer giftCertificateID = 1;
         String name = "abc";
@@ -137,7 +134,7 @@ public class GiftCertificateServiceTest {
     }
 
     @Test
-    public void readGiftCertificateNotExistId_ThrownNotExistIdEntityException() {
+    public void read_notExistId_thrownNotExistIdEntityException() {
         // given
         Integer giftCertificateID = 123;
         // when
@@ -147,7 +144,7 @@ public class GiftCertificateServiceTest {
     }
 
     @Test
-    public void deleteGiftCertificate_Successful() {
+    public void delete_theEntityWasRemovedFromTheDatabase() {
         // given
         Integer giftCertificateID = 1;
         // when
@@ -157,7 +154,7 @@ public class GiftCertificateServiceTest {
     }
 
     @Test
-    public void deleteNotExistIdGiftCertificate_ThrownNotExistIdEntityException() {
+    public void delete_notExistIdGiftCertificate_thrownNotExistIdEntityException() {
         // given
         Integer giftCertificateID = 123;
         // when
@@ -167,7 +164,7 @@ public class GiftCertificateServiceTest {
     }
 
     @Test
-    public void updateGiftCertificate_Successful() {
+    public void update_theEntityDataHasBeenUpdated() {
         // given
         Integer modifiedGiftCertificateId = 1;
         String modifiedGiftCertificateName = "modifiedName";
@@ -193,7 +190,7 @@ public class GiftCertificateServiceTest {
     }
 
     @Test
-    public void updateGiftCertificate_NotExistId_ThrownNotExistIdException() {
+    public void update_notExistId_thrownNotExistIdException() {
         // given
         Integer modifiedGiftCertificateId = 1321;
         String modifiedGiftCertificateName = "newName";

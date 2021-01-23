@@ -86,9 +86,8 @@ public class GiftCertificateService implements IGiftCertificateService {
     @Override
     @Transactional
     public GiftCertificateDto create(GiftCertificateDto giftCertificateDto) {
-        GiftCertificate createdGiftCertificate;
         createAndSetTags(giftCertificateDto);
-        createdGiftCertificate = giftCertificateRepository.create(modelMapper.map(giftCertificateDto, GiftCertificate.class));
+        GiftCertificate createdGiftCertificate = giftCertificateRepository.create(modelMapper.map(giftCertificateDto, GiftCertificate.class));
         return modelMapper.map(createdGiftCertificate, GiftCertificateDto.class);
     }
 

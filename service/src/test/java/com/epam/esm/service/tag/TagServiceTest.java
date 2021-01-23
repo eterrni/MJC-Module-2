@@ -21,7 +21,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
-@ContextConfiguration(classes = {ServiceConfiguration.class})
+@ContextConfiguration(classes = ServiceConfiguration.class)
 public class TagServiceTest {
 
     @Autowired
@@ -42,7 +42,7 @@ public class TagServiceTest {
     }
 
     @Test
-    public void readAllTag_Successful() {
+    public void readAll_returnsTheExpectedResult() {
         // given
         Integer tagId = 1;
         String name = "tagName";
@@ -63,7 +63,7 @@ public class TagServiceTest {
     }
 
     @Test
-    public void readAllTag_TagsNotJoinToCertificates_Unsuccessful() {
+    public void readAll_tagsNotJoinToCertificates_failedExecution() {
         // given
         Integer tagId = 1;
         String name = "tagName";
@@ -84,7 +84,7 @@ public class TagServiceTest {
     }
 
     @Test
-    public void readTag_Successful() {
+    public void read_returnsTheExpectedResult() {
         // given
         Integer tagId = 1;
         String name = "tagName";
@@ -98,7 +98,7 @@ public class TagServiceTest {
     }
 
     @Test
-    public void readTag_NotExistId_ThrownNotExistIdEntityException() {
+    public void read_notExistId_thrownNotExistIdEntityException() {
         // given
         Integer tagId = 123;
         // when
@@ -108,7 +108,7 @@ public class TagServiceTest {
     }
 
     @Test
-    public void deleteTag_Successful() {
+    public void delete_theEntityWasRemovedFromTheDatabase() {
         // given
         Integer tagId = 1;
         // when
@@ -118,7 +118,7 @@ public class TagServiceTest {
     }
 
     @Test
-    public void deleteTag_NotExistId_ThrownNotExistIdException() {
+    public void delete_notExistId_thrownNotExistIdException() {
         // given
         Integer tagId = 123;
         // when
@@ -128,7 +128,7 @@ public class TagServiceTest {
     }
 
     @Test
-    public void createTag_Successful() {
+    public void create_entityWasCreatedInDatabase() {
         // given
         TagDto addedTagDto = new TagDto(0, "newTag");
         Tag addedTag = new Tag(0, "newTag");
@@ -143,7 +143,7 @@ public class TagServiceTest {
     }
 
     @Test
-    public void createTag_DuplicateTagName_ThrownDuplicateNameException() {
+    public void create_duplicateTagName_thrownDuplicateNameException() {
         // given
         TagDto addedTagDto = new TagDto(0, "duplicateName");
         Tag addedTag = new Tag(0, "newTag");
