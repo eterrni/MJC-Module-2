@@ -118,22 +118,30 @@ public class GiftCertificateService implements IGiftCertificateService {
     }
 
     private void prepareParametersForRequest(HashMap<String, String> parameters) {
-        if (Objects.isNull(parameters.get("tagName"))) {
-            parameters.put("tagName", EMPTY_VALUE);
-        }
-        if (Objects.isNull(parameters.get("name"))) {
-            parameters.put("name", EMPTY_VALUE);
-        }
-        if (Objects.isNull(parameters.get("description"))) {
-            parameters.put("description", EMPTY_VALUE);
-        }
-        if (Objects.isNull(parameters.get("sortType"))) {
-            parameters.put("sortType", GiftCertificateQueryParameters.SortType.DEFAULT.getSortType());
-            parameters.put("orderType", GiftCertificateQueryParameters.OrderType.DEFAULT.getOrderType());
+        prepareParametersForRequest_TagName_Name_Description(parameters);
+        prepareParametersForRequest_SortType_OrderType(parameters);
+    }
+
+    private void prepareParametersForRequest_SortType_OrderType(HashMap<String, String> parameters) {
+        if (Objects.isNull(parameters.get(PARAMETER_SORT_TYPE))) {
+            parameters.put(PARAMETER_SORT_TYPE, GiftCertificateQueryParameters.SortType.DEFAULT.getSortType());
+            parameters.put(PARAMETER_ORDER_TYPE, GiftCertificateQueryParameters.OrderType.DEFAULT.getOrderType());
         } else {
-            if (Objects.isNull(parameters.get("orderType"))) {
-                parameters.put("orderType", GiftCertificateQueryParameters.OrderType.DEFAULT.getOrderType());
+            if (Objects.isNull(parameters.get(PARAMETER_ORDER_TYPE))) {
+                parameters.put(PARAMETER_ORDER_TYPE, GiftCertificateQueryParameters.OrderType.DEFAULT.getOrderType());
             }
+        }
+    }
+
+    private void prepareParametersForRequest_TagName_Name_Description(HashMap<String, String> parameters) {
+        if (Objects.isNull(parameters.get(PARAMETER_TAG_NAME))) {
+            parameters.put(PARAMETER_TAG_NAME, EMPTY_VALUE);
+        }
+        if (Objects.isNull(parameters.get(PARAMETER_NAME))) {
+            parameters.put(PARAMETER_NAME, EMPTY_VALUE);
+        }
+        if (Objects.isNull(parameters.get(PARAMETER_DESCRIPTION))) {
+            parameters.put(PARAMETER_DESCRIPTION, EMPTY_VALUE);
         }
     }
 
@@ -144,14 +152,13 @@ public class GiftCertificateService implements IGiftCertificateService {
     private void createAndSetTags(GiftCertificateDto giftCertificateDto) {
         List<TagDto> tags = new ArrayList<>();
         if (giftCertificateDto.getTags() != null) {
-            TagDto add;
             for (TagDto tagDto : giftCertificateDto.getTags()) {
                 Tag tag = modelMapper.map(tagDto, Tag.class);
                 try {
-                    add = modelMapper.map(tagDAO.create(tag), TagDto.class);
+                    TagDto add = modelMapper.map(tagDAO.create(tag), TagDto.class);
                     tags.add(add);
                 } catch (DuplicateNameException tagExist) {
-                    add = modelMapper.map(tagDAO.readTagByName(tag.getName()), TagDto.class);
+                    TagDto add = modelMapper.map(tagDAO.readTagByName(tag.getName()), TagDto.class);
                     tags.add(add);
                 }
             }

@@ -43,11 +43,11 @@ public class GiftCertificateRepository implements IGiftCertificateRepository {
             "gift_certificate.name LIKE concat(?, '%') AND\n" +
             "gift_certificate.description LIKE concat(?, '%') GROUP BY gift_certificate.id ";
 
-    private JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
-    private GiftCertificateMapper giftCertificateMapper;
+    private final GiftCertificateMapper giftCertificateMapper;
 
-    private TagMapper tagMapper;
+    private final TagMapper tagMapper;
 
     @Autowired
     public GiftCertificateRepository(JdbcTemplate jdbcTemplate, GiftCertificateMapper giftCertificateMapper, TagMapper tagMapper) {
@@ -103,7 +103,7 @@ public class GiftCertificateRepository implements IGiftCertificateRepository {
     }
 
     @Override
-    public Integer update(GiftCertificate giftCertificate) {
+    public int update(GiftCertificate giftCertificate) {
         createGiftCertificateHasTag(giftCertificate);
         return jdbcTemplate.update(UPDATE_GIFT_CERTIFICATE,
                 giftCertificate.getName(),

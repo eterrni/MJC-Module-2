@@ -5,7 +5,10 @@ import com.epam.esm.exception.IncorrectParameterValueException;
 
 import java.util.Objects;
 
-public class SortAndOrderConverter {
+public final class SortAndOrderConverter {
+
+    private SortAndOrderConverter() {
+    }
 
     public static String sortTypeConverter(String sortTypeString) {
         String sortType = null;
