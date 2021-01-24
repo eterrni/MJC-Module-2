@@ -51,7 +51,7 @@ public class GiftCertificateServiceTest {
     }
 
     @Test
-    public void readAll_returnsTheExpectedResult() {
+    public void readAll_returnsTheExpectedResult_test() {
         //given
         Integer giftCertificateID = 1;
         String name = "abc";
@@ -79,7 +79,7 @@ public class GiftCertificateServiceTest {
     }
 
     @Test
-    public void readAll_tagsNotJoinToCertificates() {
+    public void readAll_tagsNotJoinToCertificates_test() {
         //given
         Integer giftCertificateID = 1;
         String name = "abc";
@@ -108,7 +108,7 @@ public class GiftCertificateServiceTest {
     }
 
     @Test
-    public void read_returnsTheExpectedResult() {
+    public void read_returnsTheExpectedResult_test() {
         // given
         Integer giftCertificateID = 1;
         String name = "abc";
@@ -134,7 +134,7 @@ public class GiftCertificateServiceTest {
     }
 
     @Test
-    public void read_notExistId_thrownNotExistIdEntityException() {
+    public void read_notExistId_thrownNotExistIdEntityException_test() {
         // given
         Integer giftCertificateID = 123;
         // when
@@ -144,7 +144,7 @@ public class GiftCertificateServiceTest {
     }
 
     @Test
-    public void delete_theEntityWasRemovedFromTheDatabase() {
+    public void delete_theEntityWasRemovedFromTheDatabase_test() {
         // given
         Integer giftCertificateID = 1;
         // when
@@ -154,7 +154,7 @@ public class GiftCertificateServiceTest {
     }
 
     @Test
-    public void delete_notExistIdGiftCertificate_thrownNotExistIdEntityException() {
+    public void delete_notExistIdGiftCertificate_thrownNotExistIdEntityException_test() {
         // given
         Integer giftCertificateID = 123;
         // when
@@ -164,7 +164,7 @@ public class GiftCertificateServiceTest {
     }
 
     @Test
-    public void update_theEntityDataHasBeenUpdated() {
+    public void update_theEntityDataHasBeenUpdated_test() {
         // given
         Integer modifiedGiftCertificateId = 1;
         String modifiedGiftCertificateName = "modifiedName";
@@ -190,7 +190,7 @@ public class GiftCertificateServiceTest {
     }
 
     @Test
-    public void update_notExistId_thrownNotExistIdException() {
+    public void update_notExistId_thrownNotExistIdException_test() {
         // given
         Integer modifiedGiftCertificateId = 1321;
         String modifiedGiftCertificateName = "newName";

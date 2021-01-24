@@ -5,14 +5,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 import javax.sql.DataSource;
 import java.beans.PropertyVetoException;
 
 @Configuration
 @ComponentScan(basePackages = "com.epam.esm")
-@EnableWebMvc
 public class DatabaseBeanConfiguration {
 
     private static final String DRIVER_CLASS_NAME = "com.mysql.jdbc.Driver";
@@ -35,9 +33,9 @@ public class DatabaseBeanConfiguration {
     }
 
     @Bean
-    public JdbcTemplate jdbcTemplate() {
+    public JdbcTemplate jdbcTemplate(DataSource dataSource) {
 
-        return new JdbcTemplate(dataSource());
+        return new JdbcTemplate(dataSource);
     }
 
 

@@ -38,11 +38,11 @@ public class TagRepository implements ITagRepository {
 
     private static final Integer PARAMETER_INDEX_TAG_NAME = 1;
 
-    private JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
-    private TagMapper tagMapper;
+    private final TagMapper tagMapper;
 
-    private GiftCertificateMapper giftCertificateMapper;
+    private final GiftCertificateMapper giftCertificateMapper;
 
     @Autowired
     public TagRepository(JdbcTemplate jdbcTemplate, TagMapper tagMapper, GiftCertificateMapper giftCertificateMapper) {

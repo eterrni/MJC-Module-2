@@ -17,7 +17,7 @@ public interface IGiftCertificateRepository extends ICRDRepository<GiftCertifica
      * @param entity modified
      * @return Number of affected rows when updated
      */
-    Integer update(final GiftCertificate entity);
+    int update(final GiftCertificate entity);
 
     /**
      * The method returns a collection of entities

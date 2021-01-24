@@ -42,7 +42,7 @@ public class TagServiceTest {
     }
 
     @Test
-    public void readAll_returnsTheExpectedResult() {
+    public void readAll_returnsTheExpectedResult_test() {
         // given
         Integer tagId = 1;
         String name = "tagName";
@@ -63,7 +63,7 @@ public class TagServiceTest {
     }
 
     @Test
-    public void readAll_tagsNotJoinToCertificates_failedExecution() {
+    public void readAll_tagsNotJoinToCertificates_failedExecution_test() {
         // given
         Integer tagId = 1;
         String name = "tagName";
@@ -84,7 +84,7 @@ public class TagServiceTest {
     }
 
     @Test
-    public void read_returnsTheExpectedResult() {
+    public void read_returnsTheExpectedResult_test() {
         // given
         Integer tagId = 1;
         String name = "tagName";
@@ -98,7 +98,7 @@ public class TagServiceTest {
     }
 
     @Test
-    public void read_notExistId_thrownNotExistIdEntityException() {
+    public void read_notExistId_thrownNotExistIdEntityException_test() {
         // given
         Integer tagId = 123;
         // when
@@ -108,7 +108,7 @@ public class TagServiceTest {
     }
 
     @Test
-    public void delete_theEntityWasRemovedFromTheDatabase() {
+    public void delete_theEntityWasRemovedFromTheDatabase_test() {
         // given
         Integer tagId = 1;
         // when
@@ -118,7 +118,7 @@ public class TagServiceTest {
     }
 
     @Test
-    public void delete_notExistId_thrownNotExistIdException() {
+    public void delete_notExistId_thrownNotExistIdException_test() {
         // given
         Integer tagId = 123;
         // when
@@ -128,7 +128,7 @@ public class TagServiceTest {
     }
 
     @Test
-    public void create_entityWasCreatedInDatabase() {
+    public void create_entityWasCreatedInDatabase_test() {
         // given
         TagDto addedTagDto = new TagDto(0, "newTag");
         Tag addedTag = new Tag(0, "newTag");
@@ -143,7 +143,7 @@ public class TagServiceTest {
     }
 
     @Test
-    public void create_duplicateTagName_thrownDuplicateNameException() {
+    public void create_duplicateTagName_thrownDuplicateNameException_test() {
         // given
         TagDto addedTagDto = new TagDto(0, "duplicateName");
         Tag addedTag = new Tag(0, "newTag");
