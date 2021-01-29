@@ -68,9 +68,10 @@ public class GiftCertificateController {
      *
      * @param giftCertificateDto modified
      */
-    @PutMapping("/gift-certificate")
+    @PutMapping("/gift-certificate/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void update(@RequestBody GiftCertificateDto giftCertificateDto) {
+    public void update(@PathVariable int id, @RequestBody GiftCertificateDto giftCertificateDto) {
+        giftCertificateDto.setId(id);
         service.update(giftCertificateDto);
     }
 

@@ -1,5 +1,6 @@
 package com.epam.esm.repository.certificate;
 
+import com.epam.esm.configuration.DatabaseBeanConfiguration;
 import com.epam.esm.entity.GiftCertificate;
 import com.epam.esm.entity.Tag;
 import com.epam.esm.repository.exception.NotEnoughDataForRegistrationException;
@@ -7,10 +8,14 @@ import com.epam.esm.repository.tag.TagMapper;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -21,12 +26,21 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = DatabaseBeanConfiguration.class)
 class GiftCertificateRepositoryTest {
+    private static final String CREATE_TABLE_QUERY_FILENAME = "schema.sql";
+    @Autowired
+    private GiftCertificateMapper giftCertificateMapper;
+    @Autowired
+    private TagMapper tagMapper;
     private EmbeddedDatabase embeddedDatabase;
     private GiftCertificateRepository giftCertificateRepository;
-    private static final String CREATE_TABLE_QUERY_FILENAME = "schema.sql";
-    private GiftCertificateMapper giftCertificateMapper;
-    private TagMapper tagMapper;
+
+    private LocalDateTime createDateFirstGiftCertificate;
+    private LocalDateTime lastUpdateDateFirstGiftCertificate;
+    private LocalDateTime createDateSecondGiftCertificate;
+    private LocalDateTime lastUpdateDateSecondGiftCertificate;
 
     @BeforeEach
     public void setUp() {
@@ -34,9 +48,14 @@ class GiftCertificateRepositoryTest {
                 .addScript(CREATE_TABLE_QUERY_FILENAME).setType(EmbeddedDatabaseType.H2)
                 .build();
         JdbcTemplate jdbcTemplate = new JdbcTemplate(embeddedDatabase);
-        giftCertificateMapper = new GiftCertificateMapper();
-        tagMapper = new TagMapper();
         giftCertificateRepository = new GiftCertificateRepository(jdbcTemplate, giftCertificateMapper, tagMapper);
+    }
+
+    private void setUpDate() {
+        createDateFirstGiftCertificate = LocalDateTime.of(2021, 01, 22, 11, 11, 11);
+        lastUpdateDateFirstGiftCertificate = LocalDateTime.of(2021, 01, 22, 11, 11, 11);
+        createDateSecondGiftCertificate = LocalDateTime.of(2021, 01, 22, 22, 22, 22);
+        lastUpdateDateSecondGiftCertificate = LocalDateTime.of(2021, 01, 22, 22, 22, 22);
     }
 
     @AfterEach
@@ -45,13 +64,10 @@ class GiftCertificateRepositoryTest {
     }
 
     @Test
-    void readAll_returnsTheExpectedResult() {
+    void readAll_returnsTheExpectedResult_test() {
         // given
         List<GiftCertificate> expectedGiftCertificates = new ArrayList<>();
-        LocalDateTime createDateFirstGiftCertificate = LocalDateTime.of(2021, 01, 22, 11, 11, 11);
-        LocalDateTime lastUpdateDateFirstGiftCertificate = LocalDateTime.of(2021, 01, 22, 11, 11, 11);
-        LocalDateTime createDateSecondGiftCertificate = LocalDateTime.of(2021, 01, 22, 22, 22, 22);
-        LocalDateTime lastUpdateDateSecondGiftCertificate = LocalDateTime.of(2021, 01, 22, 22, 22, 22);
+        setUpDate();
         expectedGiftCertificates.add(new GiftCertificate(1, "name1", "description1", new BigDecimal(11), 11, createDateFirstGiftCertificate, lastUpdateDateFirstGiftCertificate, null));
         expectedGiftCertificates.add(new GiftCertificate(2, "name2", "description2", new BigDecimal(22), 22, createDateSecondGiftCertificate, lastUpdateDateSecondGiftCertificate, null));
         // when
@@ -61,13 +77,10 @@ class GiftCertificateRepositoryTest {
     }
 
     @Test
-    void readAll_theActualValueNotSimilarToTheExpectedValue() {
+    void readAll_theActualValueNotSimilarToTheExpectedValue_test() {
         // given
         List<GiftCertificate> expectedGiftCertificates = new ArrayList<>();
-        LocalDateTime createDateFirstGiftCertificate = LocalDateTime.of(2021, 01, 22, 11, 11, 11);
-        LocalDateTime lastUpdateDateFirstGiftCertificate = LocalDateTime.of(2021, 01, 22, 11, 11, 11);
-        LocalDateTime createDateSecondGiftCertificate = LocalDateTime.of(2021, 01, 22, 22, 22, 22);
-        LocalDateTime lastUpdateDateSecondGiftCertificate = LocalDateTime.of(2021, 01, 22, 22, 22, 22);
+        setUpDate();
         expectedGiftCertificates.add(new GiftCertificate(1, "non-existent name", "description1", new BigDecimal(11), 11, createDateFirstGiftCertificate, lastUpdateDateFirstGiftCertificate, null));
         expectedGiftCertificates.add(new GiftCertificate(2, "non-existent name2", "description2", new BigDecimal(22), 22, createDateSecondGiftCertificate, lastUpdateDateSecondGiftCertificate, null));
         // when
@@ -77,11 +90,10 @@ class GiftCertificateRepositoryTest {
     }
 
     @Test
-    void read_existId_returnsTheExpectedResult() {
+    void read_existId_returnsTheExpectedResult_test() {
         // given
-        Integer giftCertificateID = 1;
-        LocalDateTime createDateFirstGiftCertificate = LocalDateTime.of(2021, 01, 22, 11, 11, 11);
-        LocalDateTime lastUpdateDateFirstGiftCertificate = LocalDateTime.of(2021, 01, 22, 11, 11, 11);
+        int giftCertificateID = 1;
+        setUpDate();
         Optional<GiftCertificate> expectedCertificateFirst = Optional.of(new GiftCertificate(1, "name1", "description1", new BigDecimal(11), 11, createDateFirstGiftCertificate, lastUpdateDateFirstGiftCertificate, null));
         // when
         Optional<GiftCertificate> actualGiftCertificate = giftCertificateRepository.read(giftCertificateID);
@@ -90,9 +102,9 @@ class GiftCertificateRepositoryTest {
     }
 
     @Test
-    void read_notExistId_returnEmptyOptional() {
+    void read_notExistId_returnEmptyOptional_test() {
         // given
-        Integer giftCertificateID = 1123;
+        int giftCertificateID = 1123;
         // when
         Optional<GiftCertificate> readGiftCertificate = giftCertificateRepository.read(giftCertificateID);
         // then
@@ -100,33 +112,33 @@ class GiftCertificateRepositoryTest {
     }
 
     @Test
-    void delete_existId_returnedNonZeroNumber() {
+    void delete_existId_returnedNonZeroNumber_test() {
         // given
-        Integer giftCertificateID = 1;
+        int giftCertificateID = 1;
         // when
-        Integer deleteNumber = giftCertificateRepository.delete(giftCertificateID);
+        int deleteNumber = giftCertificateRepository.delete(giftCertificateID);
         // then
         assertNotEquals(0, deleteNumber);
     }
 
     @Test
-    void delete_notExistId_returnedZeroNumber() {
+    void delete_notExistId_returnedZeroNumber_test() {
         // given
-        Integer giftCertificateID = 1123;
+        int giftCertificateID = 1123;
         // when
-        Integer deleteNumber = giftCertificateRepository.delete(giftCertificateID);
+        int deleteNumber = giftCertificateRepository.delete(giftCertificateID);
         // then
         assertEquals(0, deleteNumber);
     }
 
     @Test
-    void update_existId_returnedNonZeroNumber() {
+    void update_existId_returnedNonZeroNumber_test() {
         // given
-        Integer giftCertificateID = 1;
+        int giftCertificateID = 1;
         String modifiedName = "newName";
         String notModifiedDescription = "description1";
         BigDecimal notModifiedPrice = BigDecimal.valueOf(11);
-        Integer notModifiedDuration = 11;
+        int notModifiedDuration = 11;
         List<Tag> tags = new ArrayList<>();
         GiftCertificate modifiedGiftCertificate = new GiftCertificate();
         modifiedGiftCertificate.setId(giftCertificateID);
@@ -136,19 +148,19 @@ class GiftCertificateRepositoryTest {
         modifiedGiftCertificate.setDuration(notModifiedDuration);
         modifiedGiftCertificate.setTags(tags);
         // when
-        Integer updateNumber = giftCertificateRepository.update(modifiedGiftCertificate);
+        int updateNumber = giftCertificateRepository.update(modifiedGiftCertificate);
         // then
         assertNotEquals(0, updateNumber);
     }
 
     @Test
-    void update_notExistId_returnedNonZeroNumber() {
+    void update_notExistId_returnedNonZeroNumber_test() {
         // given
-        Integer giftCertificateID = 1123;
+        int giftCertificateID = 1123;
         String modifiedName = "newName";
         String notModifiedDescription = "description1";
         BigDecimal notModifiedPrice = BigDecimal.valueOf(11);
-        Integer notModifiedDuration = 11;
+        int notModifiedDuration = 11;
         List<Tag> tags = new ArrayList<>();
         GiftCertificate modifiedGiftCertificate = new GiftCertificate();
         modifiedGiftCertificate.setId(giftCertificateID);
@@ -158,13 +170,13 @@ class GiftCertificateRepositoryTest {
         modifiedGiftCertificate.setDuration(notModifiedDuration);
         modifiedGiftCertificate.setTags(tags);
         // when
-        Integer updateNumber = giftCertificateRepository.update(modifiedGiftCertificate);
+        int updateNumber = giftCertificateRepository.update(modifiedGiftCertificate);
         // then
         assertEquals(0, updateNumber);
     }
 
     @Test
-    void create_returnCreatedEntityWith_Id_CreatedDate_LastUpdateDate() {
+    void create_returnCreatedEntityWith_Id_CreatedDate_LastUpdateDate_test() {
         // given
         GiftCertificate giftCertificate = new GiftCertificate();
         giftCertificate.setName("newCertificate");
@@ -178,7 +190,7 @@ class GiftCertificateRepositoryTest {
     }
 
     @Test
-    void create_notAllParametersWerePassedForRegistration_thrownNotEnoughDataForRegistrationException() {
+    void create_notAllParametersWerePassedForRegistration_thrownNotEnoughDataForRegistrationException_test() {
         // given
         GiftCertificate giftCertificate = new GiftCertificate();
         giftCertificate.setDescription("description");
@@ -190,13 +202,10 @@ class GiftCertificateRepositoryTest {
     }
 
     @Test
-    void joinCertificatesAndTags_returnsCertificatesWithTagsAttachedToThem() {
+    void joinCertificatesAndTags_returnsCertificatesWithTagsAttachedToThem_test() {
         // given
         List<GiftCertificate> giftCertificateListWithoutTags = new ArrayList<>();
-        LocalDateTime createDateFirstGiftCertificate = LocalDateTime.of(2021, 01, 22, 11, 11, 11);
-        LocalDateTime lastUpdateDateFirstGiftCertificate = LocalDateTime.of(2021, 01, 22, 11, 11, 11);
-        LocalDateTime createDateSecondGiftCertificate = LocalDateTime.of(2021, 01, 22, 22, 22, 22);
-        LocalDateTime lastUpdateDateSecondGiftCertificate = LocalDateTime.of(2021, 01, 22, 22, 22, 22);
+        setUpDate();
         giftCertificateListWithoutTags.add(new GiftCertificate(1, "name1", "description1", new BigDecimal(11), 11, createDateFirstGiftCertificate, lastUpdateDateFirstGiftCertificate, null));
         giftCertificateListWithoutTags.add(new GiftCertificate(2, "name2", "description2", new BigDecimal(22), 22, createDateSecondGiftCertificate, lastUpdateDateSecondGiftCertificate, null));
         // when
@@ -208,7 +217,7 @@ class GiftCertificateRepositoryTest {
     }
 
     @Test
-    void readByQueryParameters_readGiftCertificatesBy_Name_TagName_Description() {
+    void readByQueryParameters_readGiftCertificatesBy_Name_TagName_Description_test() {
         // given
         HashMap<String, String> parameters = new HashMap<>();
         parameters.put("tagName", "nameTag1");

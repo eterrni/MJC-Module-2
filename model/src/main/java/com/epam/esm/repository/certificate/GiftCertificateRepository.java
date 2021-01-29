@@ -6,6 +6,7 @@ import com.epam.esm.repository.IGiftCertificateRepository;
 import com.epam.esm.repository.exception.NotEnoughDataForRegistrationException;
 import com.epam.esm.repository.tag.TagMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -43,11 +44,11 @@ public class GiftCertificateRepository implements IGiftCertificateRepository {
             "gift_certificate.name LIKE concat(?, '%') AND\n" +
             "gift_certificate.description LIKE concat(?, '%') GROUP BY gift_certificate.id ";
 
-    private JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
-    private GiftCertificateMapper giftCertificateMapper;
+    private final GiftCertificateMapper giftCertificateMapper;
 
-    private TagMapper tagMapper;
+    private final TagMapper tagMapper;
 
     @Autowired
     public GiftCertificateRepository(JdbcTemplate jdbcTemplate, GiftCertificateMapper giftCertificateMapper, TagMapper tagMapper) {
@@ -92,7 +93,7 @@ public class GiftCertificateRepository implements IGiftCertificateRepository {
         } catch (Exception e) {
             throw new NotEnoughDataForRegistrationException("Invalid parameters for creating a gift certificate. To create a certificate, you must write the name, description, price, and duration of the certificate");
         }
-        Integer generatedID = (Integer) keyHolder.getKeys().entrySet().iterator().next().getValue();
+        Number generatedID = (Number) keyHolder.getKeys().entrySet().iterator().next().getValue();
         GiftCertificate createdGiftCertificate = jdbcTemplate.query(SELECT_CERTIFICATE_ID, new Object[]{generatedID}, giftCertificateMapper).stream().findFirst().get();
         giftCertificate.setId(createdGiftCertificate.getId());
         giftCertificate.setCreateDate(createdGiftCertificate.getCreateDate());
@@ -103,7 +104,7 @@ public class GiftCertificateRepository implements IGiftCertificateRepository {
     }
 
     @Override
-    public Integer update(GiftCertificate giftCertificate) {
+    public int update(GiftCertificate giftCertificate) {
         createGiftCertificateHasTag(giftCertificate);
         return jdbcTemplate.update(UPDATE_GIFT_CERTIFICATE,
                 giftCertificate.getName(),
@@ -128,9 +129,13 @@ public class GiftCertificateRepository implements IGiftCertificateRepository {
 
     private void createGiftCertificateHasTag(GiftCertificate giftCertificate) {
         jdbcTemplate.update(DELETE_GIFT_CERTIFICATE_HAS_TAG, giftCertificate.getId());
-        if (giftCertificate.getTags() != null) {
-            List<Tag> tags = giftCertificate.getTags();
-            tags.forEach(tag -> jdbcTemplate.update(CREATE_CERTIFICATE_HAS_TAG, giftCertificate.getId(), tag.getId()));
+        List<Tag> tags = giftCertificate.getTags();
+        for (Tag tag : tags) {
+            try {
+                jdbcTemplate.update(CREATE_CERTIFICATE_HAS_TAG, giftCertificate.getId(), tag.getId());
+            } catch (DuplicateKeyException ignored) {
+            }
         }
+
     }
 }

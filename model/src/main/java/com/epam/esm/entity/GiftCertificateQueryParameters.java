@@ -15,7 +15,9 @@ public class GiftCertificateQueryParameters {
     private OrderType orderType;
 
     public enum SortType {
-        NAME("order by mjc_module_2.gift_certificate.name"), CREATE_DATE("order by mjc_module_2.gift_certificate.create_date"), DEFAULT("");
+        NAME("order by mjc_module_2.gift_certificate.name"),
+        CREATE_DATE("order by mjc_module_2.gift_certificate.create_date"),
+        DEFAULT("");
         private final String sortType;
 
         SortType(String sortType) {
@@ -28,7 +30,9 @@ public class GiftCertificateQueryParameters {
     }
 
     public enum OrderType {
-        ASC("ASC"), DESC("DESC"), DEFAULT("");
+        ASC("ASC"),
+        DESC("DESC"),
+        DEFAULT("");
 
         private final String orderType;
 
