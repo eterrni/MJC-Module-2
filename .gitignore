@@ -2,10 +2,8 @@
 *.class
 *.bat
 gradlew
-
 # Log file
 *.iml
-
 #Ignore IntelliJ folders
 /.settings
 /build

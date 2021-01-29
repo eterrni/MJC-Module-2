@@ -51,7 +51,11 @@ class GiftCertificateRepositoryTest {
         giftCertificateRepository = new GiftCertificateRepository(jdbcTemplate, giftCertificateMapper, tagMapper);
     }
 
+<<<<<<< HEAD
     private void setUpDate() {
+=======
+    public void setUpDate() {
+>>>>>>> a1b8603b1c0e7d87948fb781b0b562076f177287
         createDateFirstGiftCertificate = LocalDateTime.of(2021, 01, 22, 11, 11, 11);
         lastUpdateDateFirstGiftCertificate = LocalDateTime.of(2021, 01, 22, 11, 11, 11);
         createDateSecondGiftCertificate = LocalDateTime.of(2021, 01, 22, 22, 22, 22);
